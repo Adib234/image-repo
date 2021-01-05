@@ -18,7 +18,7 @@ module.exports = {
   },
 
   update: (req, res) => {
-    ParkModel.update({ _id: req.body._id }, req.body)
+    ParkModel.updateOne({ _id: req.body._id }, req.body)
       .then((park) => {
         if (!park) res.json({ success: false, result: "No such park exists" });
 
@@ -41,15 +41,26 @@ module.exports = {
       });
   },
 
+  specificRetrieve: (req, res) => {
+    ParkModel.findById(req.params.id)
+      .then((park) => {
+        if (!park) res.json({ success: false, result: "No parks found" });
+
+        res.json({ sucess: true, result: park });
+      })
+      .catch((err) => {
+        res.json({ success: false, result: err });
+      });
+  },
   delete: (req, res) => {
-    ParkModel.remove({ _id: req.body._id })
+    ParkModel.deleteOne({ _id: req.body._id })
       .then((park) => {
         if (!park)
           res.json({
             success: false,
             result: "No park with such ID was found",
           });
-        res.json({ success: true, result: result });
+        res.json({ success: true, result: "Deleted" });
       })
       .catch((err) => res.json({ success: false, result: err }));
   },

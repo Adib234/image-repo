@@ -28,7 +28,8 @@ const ParkControl = require("./controller");
 
 //Routes
 app.post("/api/park/create", ParkControl.create);
-app.post("/api/park/update", ParkControl.update);
+app.put("/api/park/update", ParkControl.update);
 app.get("/api/park/retrieve", ParkControl.retrieve);
+app.get("/api/park/retrieve/:id", ParkControl.specificRetrieve);
 app.delete("/api/park/delete", ParkControl.delete);
 //Start Server

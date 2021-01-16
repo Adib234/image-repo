@@ -17,3 +17,5 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 - Swagger.io
 - JWT
+- This [link](https://stackoverflow.com/questions/13175510/call-python-function-from-javascript-code) seems interesting if I want to create a Python image classifier and then can make an axios request to it
+- [Image classifier](https://www.tensorflow.org/tutorials/images/classification)

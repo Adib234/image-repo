@@ -62,9 +62,9 @@ export default {
         var filePath = `${bucketName}/` + fileName;
 
         var upload = s3.upload({
+          Bucket: bucketName,
           Key: filePath,
           Body: file,
-          ACL: "public-read",
         });
         var promise = upload.promise();
 

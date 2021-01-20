@@ -1,20 +1,23 @@
 <template>
   <div class="hello">
     <h1 class="is-size-1">{{ msg }}</h1>
+    <Add />
     <Search />
   </div>
 </template>
 
 <script>
+import Add from "./Add";
 import Search from "./Search";
 export default {
   name: "HelloWorld",
   props: {
-    msg: String,
+    msg: String
   },
   components: {
-    Search,
-  },
+    Add,
+    Search
+  }
 };
 </script>
 

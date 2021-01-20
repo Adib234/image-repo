@@ -13,9 +13,10 @@ This is a Vue web app which has an image repository which you can hopefully sear
 # To do
 
 - ADD
-  - Why cant i access my object url?
   - Figure out how to store mongodb id and amazon s3 id so retrieving the images becomes easy
   - How to add bulk images?
+  - When you add, add something in MongoDB like an id and some tags through the image classifer, im battling between Elasticsearch and MongoDB, don't wanna keep too many databases because that's a lot of maintenance and i think pulling off the networking feat is a challenge
+- SEARCH
 
 # Considerations
 

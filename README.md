@@ -10,6 +10,8 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - I just found out how to `this` in a callback. All you have to do is create a new variable for example `let self = this` and then use `self` from now on. Here's a [link](https://stackoverflow.com/questions/45743395/uncaught-in-promise-typeerror-cannot-set-property-of-undefined-with-axios) to my problem and here's an explanation of what's going [on](https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback/20279485#20279485).
 - For the love of god if you do any asychronous work like fetching from a resource do it don't try to wriggle out of it with synchronous code.
 - (January 20, 2021) I just configured the backend with Flask which serves the data from the image classifier and have the Axios client request it, this is so damn cool.
+- To add two git repositories together `git subtree add --prefix=[name of new folder] [child git rep url] [branch of git repo you want to be the parent]`, here's a (post)[https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories] about it
+- CORS should always be configured when making cross domain requests, here's a great website of how to set up CORS in different (frameworks)[https://enable-cors.org/index.html]
 
 # To do
 

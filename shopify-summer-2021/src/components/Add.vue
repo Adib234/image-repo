@@ -5,22 +5,16 @@
       <div class="level">
         <input
           v-model="imageDescription"
-          class="input is-medium "
+          class="input is-medium"
           type="text"
           placeholder="Enter some description of the image if you'd like, otherwise we will classify the image on our own!"
         />
 
-        <button v-on:click="s3upload" class="button is-light is-medium">
-          Add
-        </button>
+        <button v-on:click="s3upload" class="button is-light is-medium">Add</button>
       </div>
       <div class="container has-text-centered">
         <div class="level">
-          <input
-            class="button is-light is-medium"
-            type="file"
-            id="fileUpload"
-          />
+          <input class="button is-light is-medium" type="file" id="fileUpload" />
         </div>
       </div>
     </section>
@@ -38,10 +32,7 @@
 
 <script>
 import AWS from "aws-sdk";
-import Vue from "vue";
-import { Toast } from "buefy";
-import "buefy/dist/buefy.css";
-Vue.use(Toast);
+import axios from "axios";
 
 let bucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
@@ -50,12 +41,12 @@ let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
 AWS.config.update({
   region: bucketRegion,
   credentials: new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: IdentityPoolId,
-  }),
+    IdentityPoolId: IdentityPoolId
+  })
 });
 var s3 = new AWS.S3({
   apiVersion: "2006-03-01",
-  params: { Bucket: bucketName },
+  params: { Bucket: bucketName }
 });
 export default {
   name: "Add",
@@ -65,14 +56,14 @@ export default {
       fileNameGlobal: "",
       imageUrl: "",
       imageDescription: "",
-      words: 0,
+      words: 0
     };
   },
   methods: {
     showImage: function() {
       var params = {
         Bucket: bucketName,
-        Key: `${bucketName}/` + this.fileNameGlobal,
+        Key: `${bucketName}/` + this.fileNameGlobal
       };
       let getImage = s3.getObject(params);
 
@@ -89,6 +80,16 @@ export default {
             "data:image/jpeg;base64, " +
             btoa(str).replace(/.{76}(?=.)/g, "$&\n");
           self.imageUrl = srcUrl;
+          axios
+            .post(`http://127.0.0.1:5000/tags/`, {
+              image: srcUrl
+            })
+            .then(function(response) {
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         },
         function(err) {
           console.log(err, err.stack);
@@ -109,7 +110,7 @@ export default {
           var upload = s3.upload({
             Bucket: bucketName,
             Key: filePath,
-            Body: file,
+            Body: file
           });
           var promise = upload.promise();
 
@@ -122,7 +123,7 @@ export default {
                 message: "Yay, your file has been uploaded!",
                 type: "is-success",
                 position: "is-bottom",
-                duration: 6000,
+                duration: 6000
               });
             },
             // eslint-disable-next-line no-unused-vars
@@ -132,7 +133,7 @@ export default {
                   "Your file failed to be uploaded, please try again or later",
                 type: "is-danger",
                 position: "is-bottom",
-                duration: 6000,
+                duration: 6000
               });
             }
           );
@@ -142,22 +143,22 @@ export default {
           message: "Please upload something",
           type: "is-danger",
           position: "is-bottom",
-          duration: 3000,
+          duration: 3000
         });
       }
-    },
+    }
   },
   computed: {
     // a computed getter
     wordCount: function() {
       return this.imageDescription.split(/\W+/).length;
-    },
+    }
     // status: function() {
     //   return this.imageDescription.split(/\W+/).length >= 0
     //     ? "input is-medium is-success"
     //     : "input is-medium is-danger";
     // },
-  },
+  }
   // watch: {
   //   // eslint-disable-next-line no-unused-vars
   //   words: function(val) {

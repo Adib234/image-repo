@@ -55,8 +55,7 @@ export default {
       uploaded: false,
       fileNameGlobal: "",
       imageUrl: "",
-      imageDescription: "",
-      words: 0
+      imageDescription: ""
     };
   },
   methods: {
@@ -76,13 +75,12 @@ export default {
           let str = imageData.reduce(function(a, b) {
             return a + String.fromCharCode(b);
           }, "");
-          let srcUrl =
-            "data:image/jpeg;base64, " +
-            btoa(str).replace(/.{76}(?=.)/g, "$&\n");
+          let base64encode = btoa(str).replace(/.{76}(?=.)/g, "$&\n");
+          let srcUrl = `data:image/jpeg;base64, ${base64encode}`;
           self.imageUrl = srcUrl;
           axios
-            .post(`http://127.0.0.1:5000/tags/`, {
-              image: srcUrl
+            .post(`http://127.0.0.1:5000/tags`, {
+              image: base64encode
             })
             .then(function(response) {
               console.log(response);

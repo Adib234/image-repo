@@ -13,6 +13,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - To add two git repositories together `git subtree add --prefix=[name of new folder] [child git rep url] [branch of git repo you want to be the parent]`, here's a (post)[https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories] about it
 - CORS should always be configured when making cross domain requests, here's a great website of how to set up CORS in different (frameworks)[https://enable-cors.org/index.html]
 - Choose a folder name and stick with it lol but idea to change it later on, (especially if it's really bulky :( )
+- THE CLIENT'S REQUEST SHOULD MATCH EXACTLY TO THE SERVER'S ROUTE, a backslash wasted so many hours of my life
 
 # To do
 

@@ -9,11 +9,28 @@
       />
       <button class="button is-light is-medium">Search</button>
     </div>
+    <div class="control">
+      <label class="radio">
+        <input type="radio" id="public" value="Public" v-model="permissions" />
+        Public
+      </label>
+      <label class="radio">
+        <input type="radio" id="private" value="Private" v-model="permissions" />
+        Private
+      </label>
+    </div>
   </div>
 </template>
 
 <script>
-export default { name: "Search" };
+export default {
+  name: "Search",
+  data() {
+    {
+      return { permissions: "" };
+    }
+  }
+};
 </script>
 <style scoped>
 .level {

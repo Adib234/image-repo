@@ -1,7 +1,7 @@
 <template>
-  <div class="hello">
+  <div>
     <h1 class="is-size-1">Image Repository 🖼️</h1>
-    <div class="login card" v-if="!authenticated">
+    <div class="login card">
       <section class="hero">
         <div class="field">
           <p class="control has-icons-left has-icons-right">
@@ -25,42 +25,19 @@
             </span>
           </p>
         </div>
-        <button class="login-button button is-primary is-light is-rounded">Log me in!</button>
-        <p>Or if you've never signed up before!</p>
-        <button class="signin-button button is-primary is-light is-rounded">Sign me up!</button>
+        <button class="login-button button is-primary is-light is-rounded">Sign me up!</button>
+        <button class="signin-button button is-primary is-light is-rounded">Go back!</button>
         <p class="creator is-size-3">Made with ❤️ by A.K.M. Adib</p>
       </section>
     </div>
-    <p
-      class="description is-size-2"
-    >My goal is to help you securely upload images and be able to retrieve from a public repository and your own with many through text and other images 🙂</p>
-    <Add v-if="authenticated" />
-    <Search v-if="authenticated" />
   </div>
 </template>
 
 <script>
-import Add from "./Add";
-import Search from "./Search";
 export default {
-  name: "HelloWorld",
-  data() {
-    return { authenticated: false, validEmail: false, validPassword: false };
-  },
-  props: {
-    msg: String
-  },
-  components: {
-    Add,
-    Search
-  },
-  methods: {
-    authenticate: function() {}
-  }
+  name: "Signup"
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;

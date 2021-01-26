@@ -1,17 +1,12 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Image Repository" />
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-
 export default {
-  name: "App",
-  components: {
-    HelloWorld,
-  },
+  name: "App"
 };
 </script>
 
@@ -23,6 +18,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  /* display: flex; */
+  /* flex-flow: column; */
+  height: 100%;
 }
 </style>
 <style lang="css">

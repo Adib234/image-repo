@@ -1,6 +1,6 @@
 from imageai.Classification import ImageClassification
 import os
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask_cors import CORS
 import logging
 import base64
@@ -25,7 +25,8 @@ def put_tags():
         app.logger.info('%s is the data', data)
 
         image = data["image"]
-        app.logger.info('%s is the image', image)
+        image_name = data["fileName"]
+        # app.logger.info('%s is the image', image)
 
         execution_path = os.getcwd()
 
@@ -53,12 +54,22 @@ def put_tags():
         for eachPrediction, eachProbability in zip(predictions, probabilities):
             final.append(eachPrediction)
 
-        response = {'tags': final}
+        response = {'file_name': image_name, 'tags': final}
 
         app.logger.info('%s is the response', response)
 
         return response
 
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
     else:
         raise RuntimeError(
             "Weird - don't know how to handle method {}".format(request.method))
+
+
+def _build_cors_prelight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response

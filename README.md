@@ -10,22 +10,24 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - I just found out how to `this` in a callback. All you have to do is create a new variable for example `let self = this` and then use `self` from now on. Here's a [link](https://stackoverflow.com/questions/45743395/uncaught-in-promise-typeerror-cannot-set-property-of-undefined-with-axios) to my problem and here's an explanation of what's going [on](https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback/20279485#20279485).
 - For the love of god if you do any asychronous work like fetching from a resource do it don't try to wriggle out of it with synchronous code.
 - (January 20, 2021) I just configured the backend with Flask which serves the data from the image classifier and have the Axios client request it, this is so damn cool.
-- To add two git repositories together `git subtree add --prefix=[name of new folder] [child git rep url] [branch of git repo you want to be the parent]`, here's a (post)[https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories] about it
-- CORS should always be configured when making cross domain requests, here's a great website of how to set up CORS in different (frameworks)[https://enable-cors.org/index.html]
+- To add two git repositories together `git subtree add --prefix=[name of new folder] [child git rep url] [branch of git repo you want to be the parent]`, here's a [post](https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories) about it
+- CORS should always be configured when making cross domain requests, here's a great website of how to set up CORS in different [frameworks](https://enable-cors.org/index.html)
 - Choose a folder name and stick with it lol but idea to change it later on, (especially if it's really bulky :( )
 - THE CLIENT'S REQUEST SHOULD MATCH EXACTLY TO THE SERVER'S ROUTE, a backslash wasted so many hours of my life
+- I've decided to enable bucket versionning since there's a higher chance that a user might be frustrated with finding out there image has been wiped out by someone else's image due to AWS S3 overwriting when two image names have the same name.
 
 # To do
 
 - ADD
-  - Upload an image and then get the tags and then upload it to MongoDB?
-  - Figure out how to store mongodb id and amazon s3 id so retrieving the images becomes easy
+
+  - In the event of a successful POST request to my Flask backend, index the data in the Elasticsearch database
   - How to add bulk images?
-  - When you add, add something in MongoDB like an id and some tags through the image classifer, im battling between Elasticsearch and MongoDB, don't wanna keep too many databases because that's a lot of maintenance and i think pulling off the networking feat is a challenge
+
 - SEARCH
+  - When we send the search request we look for tags in the Elasticsearch database, then we return the scores which gives the filename
+  - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
 
 # Considerations
 
 - Swagger.io
 - JWT
-- Bucket versioning?

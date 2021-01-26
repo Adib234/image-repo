@@ -12,12 +12,23 @@
 
         <button v-on:click="s3upload" class="button is-light is-medium">Add</button>
       </div>
+      <div class="control">
+        <label class="radio">
+          <input type="radio" id="public" value="Public" v-model="permissions" />
+          Public
+        </label>
+        <label class="radio">
+          <input type="radio" id="private" value="Private" v-model="permissions" />
+          Private
+        </label>
+      </div>
       <div class="container has-text-centered">
         <div class="level">
           <input class="button is-light is-medium" type="file" id="fileUpload" />
         </div>
       </div>
     </section>
+
     <div class="container">
       <p v-if="uploaded" class="is-size-3">The image you just uploaded</p>
       <img class="img" v-if="uploaded" :src="imageUrl" />
@@ -55,7 +66,8 @@ export default {
       uploaded: false,
       fileNameGlobal: "",
       imageUrl: "",
-      imageDescription: ""
+      imageDescription: "",
+      permissions: ""
     };
   },
   methods: {
@@ -80,6 +92,7 @@ export default {
           self.imageUrl = srcUrl;
           axios
             .post(`http://127.0.0.1:5000/tags`, {
+              fileName: self.fileNameGlobal,
               image: base64encode
             })
             .then(function(response) {
@@ -185,5 +198,9 @@ export default {
 }
 .button-parent {
   margin-bottom: 2rem;
+}
+
+.control {
+  margin-bottom: 1rem;
 }
 </style>

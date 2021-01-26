@@ -10,11 +10,13 @@
 	"dependencies": {
 		"@fortawesome/fontawesome-free": "^5.15.1",
 		"@fortawesome/free-brands-svg-icons": "^5.15.1",
+		"aws-sdk": "^2.831.0",
 		"axios": "^0.21.1",
 		"buefy": "^0.9.4",
 		"bulma": "^0.9.1",
 		"core-js": "^3.6.5",
-		"vue": "^2.6.11"
+		"vue": "^2.6.11",
+		"vue-router": "^3.5.0"
 	},
 	"devDependencies": {
 		"@vue/cli-plugin-babel": "~4.5.0",

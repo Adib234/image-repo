@@ -5,7 +5,7 @@
       <section class="hero">
         <div class="field">
           <p class="control has-icons-left has-icons-right">
-            <input class="input" type="email" placeholder="Email" />
+            <input class="input" v-model="email" type="email" placeholder="Email" />
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
@@ -15,13 +15,10 @@
           </p>
         </div>
         <div class="field">
-          <p class="control has-icons-left has-icons-right">
-            <input class="input" type="password" placeholder="Password" />
+          <p class="control has-icons-left">
+            <input class="input" v-model="password" type="password" placeholder="Password" />
             <span class="icon is-small is-left">
               <i class="fas fa-lock"></i>
-            </span>
-            <span class="icon is-small is-right">
-              <i v-if="validPassword" class="fas fa-check"></i>
             </span>
           </p>
         </div>
@@ -45,7 +42,7 @@
 export default {
   name: "Signup",
   data() {
-    return { validPassword: false, validEmail: false };
+    return { email: "", password: "", validEmail: false };
   }
 };
 </script>

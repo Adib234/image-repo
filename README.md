@@ -24,8 +24,12 @@ This is a Vue web app which has an image repository which you can hopefully sear
   - How to add bulk images?
 
 - SEARCH
+
   - When we send the search request we look for tags in the Elasticsearch database, then we return the scores which gives the filename
   - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
+
+- AUTHENTICATION
+  - Have ui perform some checks like if the email is valid
 
 # Considerations
 

@@ -26,7 +26,15 @@
           </p>
         </div>
         <button class="login-button button is-primary is-light is-rounded">Sign me up!</button>
-        <button class="signin-button button is-primary is-light is-rounded">Go back!</button>
+
+        <router-link to="/" custom v-slot="{ navigate }">
+          <button
+            @click="navigate"
+            @keypress.enter="navigate"
+            role="link"
+            class="signin-button button is-primary is-light is-rounded"
+          >Go back!</button>
+        </router-link>
         <p class="creator is-size-3">Made with ❤️ by A.K.M. Adib</p>
       </section>
     </div>
@@ -35,7 +43,10 @@
 
 <script>
 export default {
-  name: "Signup"
+  name: "Signup",
+  data() {
+    return { validPassword: false, validEmail: false };
+  }
 };
 </script>
 <style scoped>

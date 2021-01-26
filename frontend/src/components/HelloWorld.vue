@@ -27,11 +27,19 @@
         </div>
         <button class="login-button button is-primary is-light is-rounded">Log me in!</button>
         <p>Or if you've never signed up before!</p>
-        <button class="signin-button button is-primary is-light is-rounded">Sign me up!</button>
+        <router-link to="/signup" custom v-slot="{ navigate }">
+          <button
+            @click="navigate"
+            @keypress.enter="navigate"
+            role="link"
+            class="signin-button button is-primary is-light is-rounded"
+          >Sign me up!</button>
+        </router-link>
         <p class="creator is-size-3">Made with ❤️ by A.K.M. Adib</p>
       </section>
     </div>
     <p
+      v-if="!authenticated"
       class="description is-size-2"
     >My goal is to help you securely upload images and be able to retrieve from a public repository and your own with many through text and other images 🙂</p>
     <Add v-if="authenticated" />
@@ -47,9 +55,7 @@ export default {
   data() {
     return { authenticated: false, validEmail: false, validPassword: false };
   },
-  props: {
-    msg: String
-  },
+
   components: {
     Add,
     Search

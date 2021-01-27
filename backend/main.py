@@ -4,11 +4,14 @@ from flask import Flask, request, make_response, current_app, g
 from flask_cors import CORS
 import logging
 import base64
-from models.py import Users
 import sqlite3
 import click
 from flask.cli import with_appcontext
+from models import User
+from flask_api import status
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -79,14 +82,17 @@ def signup():
         password = data["password"]
 
         if User.query.filter_by(email=email).first() is not None:
-            abort(400)  # existing user
-        user = User(email=email)
-        user.hash_password(password)
-        db.session.add(email)
-        db.session.commit()
-        #app.logger.info('%s is the response', response)
+            return status.HTTP_400_BAD_REQUEST  # existing user
 
-        return 1
+        else:
+
+            user = User(email=email, password=password)
+            user.hash_password(password)
+            db.session.add(email)
+            db.session.commit()
+            #app.logger.info('%s is the response', response)
+
+            return {"data": 1}
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()

@@ -1,20 +1,19 @@
 from imageai.Classification import ImageClassification
 import os
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, current_app, g
 from flask_cors import CORS
 import logging
 import base64
 from models.py import Users
+import sqlite3
+import click
+from flask.cli import with_appcontext
+
 app = Flask(__name__)
 cors = CORS(app)
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('flask_cors').level = logging.DEBUG
-
-
-@app.route('/')
-def hello_world():
-    return {"What's": "up"}
 
 
 @app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])

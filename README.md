@@ -15,6 +15,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - Choose a folder name and stick with it lol but idea to change it later on, (especially if it's really bulky :( )
 - THE CLIENT'S REQUEST SHOULD MATCH EXACTLY TO THE SERVER'S ROUTE, a backslash wasted so many hours of my life
 - I've decided to enable bucket versionning since there's a higher chance that a user might be frustrated with finding out there image has been wiped out by someone else's image due to AWS S3 overwriting when two image names have the same name.
+- Passwords should never be stored in a database, do some hashing to it and then discard it immediately after
 
 # To do
 
@@ -29,7 +30,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
   - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
 
 - AUTHENTICATION
-  - Have ui perform some checks like if the email is valid
+  - Verify that user is not bot and send verification email?
 
 # Considerations
 

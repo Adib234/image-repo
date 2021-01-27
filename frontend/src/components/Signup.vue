@@ -16,13 +16,21 @@
         </div>
         <div class="field">
           <p class="control has-icons-left">
-            <input class="input" v-model="password" type="password" placeholder="Password" />
+            <input
+              class="input"
+              v-model="password"
+              type="password"
+              placeholder="Password, please make sure it's greater than 5 characters"
+            />
             <span class="icon is-small is-left">
               <i class="fas fa-lock"></i>
             </span>
           </p>
         </div>
-        <button class="login-button button is-primary is-light is-rounded">Sign me up!</button>
+        <button
+          v-on:click="verifyUser"
+          class="login-button button is-primary is-light is-rounded"
+        >Sign me up!</button>
 
         <router-link to="/" custom v-slot="{ navigate }">
           <button
@@ -39,10 +47,69 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Signup",
   data() {
     return { email: "", password: "", validEmail: false };
+  },
+  methods: {
+    verifyUser: function() {
+      if (this.email.length == 0 && this.password.length == 0) {
+        return this.$buefy.toast.open({
+          message: "Missing password and email",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.email.length == 0 && this.password.length > 0) {
+        return this.$buefy.toast.open({
+          message: "Missing email",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.email.length > 0 && this.password.length == 0) {
+        return this.$buefy.toast.open({
+          message: "Missing password",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.password.length < 5) {
+        return this.$buefy.toast.open({
+          message: "Password must be greater than 5 characters",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else {
+        if (
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+            this.email
+          )
+        ) {
+          axios
+            .post(`http://127.0.0.1:5000/signup`, {
+              email: this.email,
+              password: this.password
+            })
+            .then(function(response) {
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        } else {
+          return this.$buefy.toast.open({
+            message: "Please enter a valid email",
+            type: "is-danger",
+            position: "is-bottom",
+            duration: 10000
+          });
+        }
+      }
+    }
   }
 };
 </script>

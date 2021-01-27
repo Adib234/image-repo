@@ -4,6 +4,7 @@ from flask import Flask, request, make_response
 from flask_cors import CORS
 import logging
 import base64
+from models.py import Users
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -53,6 +54,83 @@ def put_tags():
         final = []
         for eachPrediction, eachProbability in zip(predictions, probabilities):
             final.append(eachPrediction)
+
+        response = {'file_name': image_name, 'tags': final}
+
+        app.logger.info('%s is the response', response)
+
+        return response
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route('/signup', methods=['POST', 'OPTIONS'])
+def signup():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
+
+        data = request.json
+        app.logger.info('%s is the data', data)
+
+        email = data["email"]
+        password = data["password"]
+
+        if User.query.filter_by(email=email).first() is not None:
+            abort(400)  # existing user
+        user = User(email=email)
+        user.hash_password(password)
+        db.session.add(email)
+        db.session.commit()
+        #app.logger.info('%s is the response', response)
+
+        return 1
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route('/login', methods=['POST', 'OPTIONS'])
+def login():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
+
+        data = request.json
+        app.logger.info('%s is the data', data)
+
+        image = data["image"]
+        image_name = data["fileName"]
+
+        response = {'file_name': image_name, 'tags': final}
+
+        app.logger.info('%s is the response', response)
+
+        return response
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route('/logout', methods=['POST', 'OPTIONS'])
+def logout():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
+
+        data = request.json
+        app.logger.info('%s is the data', data)
+
+        image = data["image"]
+        image_name = data["fileName"]
+        # app.logger.info('%s is the image', image)
 
         response = {'file_name': image_name, 'tags': final}
 

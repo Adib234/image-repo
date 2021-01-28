@@ -1,3 +1,6 @@
+from datetime import datetime
+from flask import Flask
+from passlib.apps import custom_app_context as pwd_context
 from imageai.Classification import ImageClassification
 import os
 from flask import Flask, request, make_response, current_app, g
@@ -17,6 +20,11 @@ cors = CORS(app)
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('flask_cors').level = logging.DEBUG
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'SQLALCHEMY_DATABASE_URI')
+db = SQLAlchemy(app)
 
 
 @app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
@@ -86,7 +94,7 @@ def signup():
 
         else:
 
-            user = User(email=email, password=password)
+            user = User(email=email, password_hash=password)
             user.hash_password(password)
             db.session.add(email)
             db.session.commit()

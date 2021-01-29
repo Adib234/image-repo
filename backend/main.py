@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pymongo import MongoClient
 from datetime import datetime
 from passlib.apps import custom_app_context as pwd_context
@@ -10,6 +10,9 @@ import logging
 import base64
 from flask_api import status
 import pprint
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch()
 
 
 app = Flask(__name__)
@@ -29,55 +32,68 @@ client = MongoClient(connection)
 
 
 user = {"email": "",  "password_hash": "", "images_private": [],
-        "bucket_name": "", "signed_up": None}
+        "bucket_name": [], "signed_up": None}
 
 db = client["shopify-mongo"]
 users = db["users"]
 
 
-@ app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
 def put_tags():
     if request.method == 'POST':
-        app.logger.info('%s is the request', request.json)
 
         data = request.json
-        app.logger.info('%s is the data', data)
 
         image = data["image"]
         image_name = data["fileName"]
-        # app.logger.info('%s is the image', image)
 
-        execution_path = os.getcwd()
+        app.logger.info("%s", data["tags"] in data)
 
-        prediction = ImageClassification()
+        image_description = data["tags"]
+        app.logger.info('%s is the image', image)
+        if len(image_description) == 0:
+            execution_path = os.getcwd()
 
-        prediction.setModelTypeAsDenseNet121()
+            prediction = ImageClassification()
 
-        prediction.setModelPath(os.path.join(
-            execution_path, "DenseNet-BC-121-32.h5"))
-        prediction.loadModel()
+            prediction.setModelTypeAsDenseNet121()
 
-        imgdata = base64.b64decode(image)
+            prediction.setModelPath(os.path.join(
+                execution_path, "DenseNet-BC-121-32.h5"))
+            prediction.loadModel()
 
-        filename = 'image.jpg'
+            imgdata = base64.b64decode(image)
 
-        with open(filename, 'wb') as f:
-            f.write(imgdata)
+            filename = 'image.jpg'
 
-        predictions, probabilities = prediction.classifyImage(
-            os.path.join(execution_path, filename), result_count=5)
+            with open(filename, 'wb') as f:
+                f.write(imgdata)
 
-        os.remove(filename)
+            predictions, probabilities = prediction.classifyImage(
+                os.path.join(execution_path, filename), result_count=5)
 
-        final = []
-        for eachPrediction, eachProbability in zip(predictions, probabilities):
-            final.append(eachPrediction)
+            os.remove(filename)
 
-        response = {'file_name': image_name, 'tags': final}
+            final = []
+            for eachPrediction, eachProbability in zip(predictions, probabilities):
+                final.append(eachPrediction)
 
-        app.logger.info('%s is the response', response)
+            final_string = ' '.join(final)
+            response = {'file_name': image_name,
+                        'tags': final_string, 'timestamp': datetime.utcnow()}
 
-        return response
+            res = es.index(index="shopify-index", body=response)
+
+            app.logger.info('%s is the elasticsearch response', res['result'])
+
+            return response
+        else:
+            response = {'file_name': image_name, 'tags': image_description}
+            res = es.index(index="shopify-index", body=response)
+
+            app.logger.info('%s is the elasticsearch response', res['result'])
+
+            return response
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -86,7 +102,7 @@ def put_tags():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@ app.route('/signup', methods=['POST', 'OPTIONS'])
+@app.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -105,6 +121,7 @@ def signup():
             user["email"] = email
             password_hash = pwd_context.encrypt(password)
             user["password_hash"] = password_hash
+            user["signed_up"] = datetime.utcnow()
             users.insert_one(user).inserted_id
             # app.logger.info('%s is the response', response)
 
@@ -117,53 +134,52 @@ def signup():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@ app.route('/login', methods=['POST', 'OPTIONS'])
-def login():
-    if request.method == 'POST':
-        app.logger.info('%s is the request', request.json)
+# @app.route('/login', methods=['POST', 'OPTIONS'])
+# def login():
+#     if request.method == 'POST':
+#         app.logger.info('%s is the request', request.json)
 
-        data = request.json
-        app.logger.info('%s is the data', data)
+#         data = request.json
+#         app.logger.info('%s is the data', data)
 
-        image = data["image"]
-        image_name = data["fileName"]
+#         image = data["image"]
+#         image_name = data["fileName"]
 
-        response = {'file_name': image_name, 'tags': final}
+#         response = {'file_name': image_name, 'tags': final}
 
-        app.logger.info('%s is the response', response)
+#         app.logger.info('%s is the response', response)
 
-        return response
+#         return response
 
-    elif request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
-    else:
-        raise RuntimeError(
-            "Weird - don't know how to handle method {}".format(request.method))
+#     elif request.method == "OPTIONS":  # CORS preflight
+#         return _build_cors_prelight_response()
+#     else:
+#         raise RuntimeError(
+#             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@ app.route('/logout', methods=['POST', 'OPTIONS'])
-def logout():
-    if request.method == 'POST':
-        app.logger.info('%s is the request', request.json)
+# @app.route('/logout', methods=['POST', 'OPTIONS'])
+# def logout():
+#     if request.method == 'POST':
+#         app.logger.info('%s is the request', request.json)
 
-        data = request.json
-        app.logger.info('%s is the data', data)
+#         data = request.json
+#         app.logger.info('%s is the data', data)
 
-        image = data["image"]
-        image_name = data["fileName"]
-        # app.logger.info('%s is the image', image)
+#         image = data["image"]
+#         image_name = data["fileName"]
 
-        response = {'file_name': image_name, 'tags': final}
+#         response = {'file_name': image_name, 'tags': final}
 
-        app.logger.info('%s is the response', response)
+#         app.logger.info('%s is the response', response)
 
-        return response
+#         return response
 
-    elif request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
-    else:
-        raise RuntimeError(
-            "Weird - don't know how to handle method {}".format(request.method))
+#     elif request.method == "OPTIONS":  # CORS preflight
+#         return _build_cors_prelight_response()
+#     else:
+#         raise RuntimeError(
+#             "Weird - don't know how to handle method {}".format(request.method))
 
 
 def _build_cors_prelight_response():

@@ -20,6 +20,9 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
+- Now perform a search on the data based on query
+- display top 5 images for now
+
 - ADD
 
   - In the event of a successful POST request to my Flask backend, index the data in the Elasticsearch database
@@ -31,9 +34,9 @@ This is a Vue web app which has an image repository which you can hopefully sear
   - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
 
 - AUTHENTICATION
-  - Verify that user is not bot and send verification email?
+  - make sure to verfiy the user and create the logout and login route
 
 # Considerations
 
-- Swagger.io
 - JWT
+- Verify that user is not bot and send verification email?

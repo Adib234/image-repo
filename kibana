@@ -1,0 +1,2 @@
+#!/bin/bash
+KIBANA_PATH_CONF="/usr/local/etc/kibana" DATA_PATH="/usr/local/var/lib/kibana/data" exec "/usr/local/Cellar/kibana-full/7.10.1/libexec/bin/kibana"  "$@"

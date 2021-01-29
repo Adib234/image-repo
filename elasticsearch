@@ -1,0 +1,2 @@
+#!/bin/bash
+exec "/usr/local/Cellar/elasticsearch-full/7.10.1/libexec/bin/elasticsearch"  "$@"

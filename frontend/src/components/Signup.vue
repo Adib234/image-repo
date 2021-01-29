@@ -89,16 +89,29 @@ export default {
             this.email
           )
         ) {
+          let self = this;
           axios
             .post(`http://127.0.0.1:5000/signup`, {
               email: this.email,
               password: this.password
             })
+            // eslint-disable-next-line no-unused-vars
             .then(function(response) {
-              console.log(response);
+              return self.$buefy.toast.open({
+                message: "Signup success, please login now",
+                type: "is-danger",
+                position: "is-bottom",
+                duration: 10000
+              });
             })
+            // eslint-disable-next-line no-unused-vars
             .catch(function(error) {
-              console.log(error);
+              return self.$buefy.toast.open({
+                message: "You've already signed up, please login",
+                type: "is-danger",
+                position: "is-bottom",
+                duration: 10000
+              });
             });
         } else {
           return this.$buefy.toast.open({

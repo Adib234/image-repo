@@ -38,7 +38,7 @@
     <p
       v-if="!authenticated"
       class="description is-size-2"
-    >My goal is to help you securely upload images and be able to retrieve from a public repository and your own with many through text and other images 🙂</p>
+    >My goal is to help you securely upload images and be able to retrieve from a public repository and your own through text and other images 🙂</p>
     <Add v-if="authenticated" />
     <Search v-if="authenticated" />
   </div>
@@ -50,7 +50,7 @@ import Search from "./Search";
 export default {
   name: "HelloWorld",
   data() {
-    return { email: "", password: "", authenticated: false, validEmail: false };
+    return { email: "", password: "", authenticated: true, validEmail: false };
   },
 
   components: {

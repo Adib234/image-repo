@@ -90,17 +90,25 @@ export default {
           let base64encode = btoa(str).replace(/.{76}(?=.)/g, "$&\n");
           let srcUrl = `data:image/jpeg;base64, ${base64encode}`;
           self.imageUrl = srcUrl;
-          axios
-            .post(`http://127.0.0.1:5000/tags`, {
-              fileName: self.fileNameGlobal,
-              image: base64encode
-            })
-            .then(function(response) {
-              console.log(response);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+          console.log(self.imageDescription.length);
+
+          // tags == 0 test passes
+          //
+          if (self.permissions === "Public") {
+            axios
+              .post(`http://127.0.0.1:5000/tags`, {
+                fileName: self.fileNameGlobal,
+                image: base64encode,
+                tags: self.imageDescription
+              })
+              .then(function(response) {
+                console.log(response);
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
+          // else {} private permissions
         },
         function(err) {
           console.log(err, err.stack);
@@ -116,6 +124,7 @@ export default {
           var file = files[0];
           var fileName = file?.name;
           this.fileNameGlobal = fileName;
+
           var filePath = `${bucketName}/` + fileName;
 
           var upload = s3.upload({

@@ -5,7 +5,7 @@
       <input
         class="file input is-medium"
         type="text"
-        placeholder="Enter relevant keywords for image "
+        placeholder="Enter relevant keywords for image and we will show the top 5 images "
       />
       <button class="button is-light is-medium">Search</button>
     </div>

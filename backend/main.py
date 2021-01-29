@@ -1,5 +1,6 @@
+import datetime
+from pymongo import MongoClient
 from datetime import datetime
-from flask import Flask
 from passlib.apps import custom_app_context as pwd_context
 from imageai.Classification import ImageClassification
 import os
@@ -7,14 +8,10 @@ from flask import Flask, request, make_response, current_app, g
 from flask_cors import CORS
 import logging
 import base64
-import sqlite3
-import click
-from flask.cli import with_appcontext
-from models import User
 from flask_api import status
-from flask_sqlalchemy import SQLAlchemy
+import pprint
 
-db = SQLAlchemy()
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -22,12 +19,23 @@ logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('flask_cors').level = logging.DEBUG
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'SQLALCHEMY_DATABASE_URI')
-db = SQLAlchemy(app)
 
 
-@app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
+connection = os.environ.get(
+    'MONGO_URI', '/Users/admin/shopifysummer2021/backend')
+
+
+client = MongoClient(connection)
+
+
+user = {"email": "",  "password_hash": "", "images_private": [],
+        "bucket_name": "", "signed_up": None}
+
+db = client["shopify-mongo"]
+users = db["users"]
+
+
+@ app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
 def put_tags():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -78,7 +86,7 @@ def put_tags():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@app.route('/signup', methods=['POST', 'OPTIONS'])
+@ app.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -88,17 +96,17 @@ def signup():
 
         email = data["email"]
         password = data["password"]
+        # users.insert_one(user).inserted_id
 
-        if User.query.filter_by(email=email).first() is not None:
+        if users.count_documents({"email": email}) >= 1:
             return status.HTTP_400_BAD_REQUEST  # existing user
 
         else:
-
-            user = User(email=email, password_hash=password)
-            user.hash_password(password)
-            db.session.add(email)
-            db.session.commit()
-            #app.logger.info('%s is the response', response)
+            user["email"] = email
+            password_hash = pwd_context.encrypt(password)
+            user["password_hash"] = password_hash
+            users.insert_one(user).inserted_id
+            # app.logger.info('%s is the response', response)
 
             return {"data": 1}
 
@@ -109,7 +117,7 @@ def signup():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@app.route('/login', methods=['POST', 'OPTIONS'])
+@ app.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -133,7 +141,7 @@ def login():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-@app.route('/logout', methods=['POST', 'OPTIONS'])
+@ app.route('/logout', methods=['POST', 'OPTIONS'])
 def logout():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -164,3 +172,7 @@ def _build_cors_prelight_response():
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
+
+
+# def verify_password(self, password):
+#     return pwd_context.verify(password, self.password_hash)

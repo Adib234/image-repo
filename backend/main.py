@@ -46,11 +46,8 @@ def put_tags():
 
         image = data["image"]
         image_name = data["fileName"]
-
-        app.logger.info("%s", data["tags"] in data)
-
         image_description = data["tags"]
-        app.logger.info('%s is the image', image)
+
         if len(image_description) == 0:
             execution_path = os.getcwd()
 
@@ -86,14 +83,38 @@ def put_tags():
 
             app.logger.info('%s is the elasticsearch response', res['result'])
 
-            return response
+            return {"data": response, "status": 200, "statusText": 'OK', "headers": {"Access-Control-Allow-Origin": "*"}, "config": {}}
         else:
             response = {'file_name': image_name, 'tags': image_description}
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
 
-            return response
+            return {"data": response, "status": 200, "statusText": 'OK', "headers": {"Access-Control-Allow-Origin": "*"}, "config": {}}
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route('/search', methods=['POST', 'OPTIONS'])
+def search():
+    if request.method == 'POST':
+
+        data = request.json
+
+        query = data["query"]
+        es.indices.refresh(index="shopify-index")
+
+        res = es.search(index="test-index",
+                        body={"query": {"match": {"tags": query}}})
+
+        app.logger.info("Got %d Hits:" % res['hits']['total']['value'])
+        for hit in res['hits']['hits']:
+            app.logger.info("%(timestamp)s %(author)s: %(text)s" %
+                            hit["_source"])
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -115,7 +136,8 @@ def signup():
         # users.insert_one(user).inserted_id
 
         if users.count_documents({"email": email}) >= 1:
-            return status.HTTP_400_BAD_REQUEST  # existing user
+            # existing user
+            return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
         else:
             user["email"] = email
@@ -125,7 +147,7 @@ def signup():
             users.insert_one(user).inserted_id
             # app.logger.info('%s is the response', response)
 
-            return {"data": 1}
+            return {"data": 1, "status": 200, "statusText": 'OK', "headers": {}, "config": {}}
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()

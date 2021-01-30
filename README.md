@@ -2,6 +2,45 @@
 
 This is a Vue web app which has an image repository which you can hopefully search
 
+# Features
+
+**SEARCH function**
+
+- [x] from characteristics of images
+  >
+- [x] from text
+  > I have a search bar on my client that accepts queries, once the search button is clicked on the client sends the query as a request to my Flask backend and in there I have an Elasticsearch database. The full-text search engine then returns the top 5 images that match the description
+- [] from an image (search for similar images)
+  >
+
+**ADD function**
+
+- [] one / bulk / enormous amount of images
+  >
+- [] private or public (permissions)
+  >
+- [] secure uploading and stored images
+  >
+
+**DELETE function**
+
+- [] one / bulk / selected / all images
+  >
+- [] Prevent a user deleting images from another user (access control)
+  >
+- [] secure deletion of images
+  >
+
+**SELL/BUY function**
+
+- [] ability to manage inventory
+  >
+- [] set price
+  >
+- [] discounts
+  >
+- [] handle money
+
 # Things I learned
 
 - Never built a RESTFUL API before so this is my first time, this helped me a [lot](https://levelup.gitconnected.com/how-to-build-a-restful-api-using-node-js-express-mongodb-1882a966726c)

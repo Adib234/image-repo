@@ -90,10 +90,10 @@ export default {
           let base64encode = btoa(str).replace(/.{76}(?=.)/g, "$&\n");
           let srcUrl = `data:image/jpeg;base64, ${base64encode}`;
           self.imageUrl = srcUrl;
-          console.log(self.imageDescription.length);
 
           // tags == 0 test passes
-          //
+          // tags > 1 works
+          // * why does client give me bad request when server says 200
           if (self.permissions === "Public") {
             axios
               .post(`http://127.0.0.1:5000/tags`, {
@@ -138,6 +138,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             function(data) {
               self.uploaded = true;
+
               self.showImage();
               return self.$buefy.toast.open({
                 message: "Yay, your file has been uploaded!",

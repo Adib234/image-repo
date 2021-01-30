@@ -3,11 +3,12 @@
     <h1 class="is-size-2">Search</h1>
     <div class="level">
       <input
+        v-model="query"
         class="file input is-medium"
         type="text"
         placeholder="Enter relevant keywords for image and we will show the top 5 images "
       />
-      <button class="button is-light is-medium">Search</button>
+      <button v-on:click="searchRequest" class="button is-light is-medium">Search</button>
     </div>
     <div class="control">
       <label class="radio">
@@ -23,11 +24,28 @@
 </template>
 
 <script>
+import axios from "axios";
+//import AWS from "aws-sdk";
+
 export default {
   name: "Search",
   data() {
     {
-      return { permissions: "" };
+      return { query: "", permissions: "" };
+    }
+  },
+  method: {
+    searchRequest: function() {
+      axios
+        .post(`http://127.0.0.1:5000/search`, {
+          query: this.query
+        })
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   }
 };

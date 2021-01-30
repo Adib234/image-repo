@@ -56,10 +56,11 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - I've decided to enable bucket versionning since there's a higher chance that a user might be frustrated with finding out there image has been wiped out by someone else's image due to AWS S3 overwriting when two image names have the same name.
 - Passwords should never be stored in a database, do some hashing to it and then discard it immediately after
 - If you're using environment variables you gotta export in the session of the shell you are working on in the terminal, having a .env sometimes doesn't do everthing
+- Enabling CORS solves CORS issues with the server but not the client, when you send a request back, you must have `Access-Control-Allow-Origin:*` in your response header. Otherwise you're going to have server saying 200 but client throwing a bad error.
 
 # To do
 
-- Now perform a search on the data based on query
+- Now perform a search on the data based on query (test it)
 - display top 5 images for now
 
 - ADD

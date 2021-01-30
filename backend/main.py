@@ -40,6 +40,7 @@ users = db["users"]
 
 @app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
 def put_tags():
+
     if request.method == 'POST':
 
         data = request.json
@@ -82,15 +83,13 @@ def put_tags():
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
-
-            return {"data": response, "status": 200, "statusText": 'OK', "headers": {"Access-Control-Allow-Origin": "*"}, "config": {}}
+            return add_success_headers()
         else:
             response = {'file_name': image_name, 'tags': image_description}
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
-
-            return {"data": response, "status": 200, "statusText": 'OK', "headers": {"Access-Control-Allow-Origin": "*"}, "config": {}}
+            return add_success_headers()
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -115,6 +114,7 @@ def search():
         for hit in res['hits']['hits']:
             app.logger.info("%(timestamp)s %(author)s: %(text)s" %
                             hit["_source"])
+        return add_success_headers()
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -137,6 +137,7 @@ def signup():
 
         if users.count_documents({"email": email}) >= 1:
             # existing user
+            # test later if this works, we should be getting an error
             return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
         else:
@@ -147,7 +148,7 @@ def signup():
             users.insert_one(user).inserted_id
             # app.logger.info('%s is the response', response)
 
-            return {"data": 1, "status": 200, "statusText": 'OK', "headers": {}, "config": {}}
+            return add_success_headers()
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -212,5 +213,14 @@ def _build_cors_prelight_response():
     return response
 
 
+def add_success_headers():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    response.headers.add('status', 200)
+    response.headers.add('statusText', 'OK')
+    response.headers.add('data', 1)
+    return response
 # def verify_password(self, password):
 #     return pwd_context.verify(password, self.password_hash)

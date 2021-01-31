@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button class="logout button is-medium">Logout</button>
     <h2 class="is-size-2">Add</h2>
     <section class="hero">
       <div class="level">
@@ -20,6 +21,17 @@
         <label class="radio">
           <input type="radio" id="private" value="Private" v-model="permissions" />
           Private
+        </label>
+      </div>
+
+      <div class="control1">
+        <label class="radio">
+          <input type="radio" value="Single" v-model="fileUpload" />
+          Single
+        </label>
+        <label class="radio">
+          <input type="radio" value="Bulk" v-model="fileUpload" />
+          Bulk
         </label>
       </div>
       <div class="container has-text-centered">
@@ -67,7 +79,8 @@ export default {
       fileNameGlobal: "",
       imageUrl: "",
       imageDescription: "",
-      permissions: ""
+      permissions: "",
+      fileUpload: ""
     };
   },
   methods: {
@@ -212,5 +225,13 @@ export default {
 
 .control {
   margin-bottom: 1rem;
+}
+.control1 {
+  margin-bottom: 1rem;
+  margin-right: 1.2rem;
+}
+
+.logout {
+  padding: 0 5rem 0 5rem;
 }
 </style>

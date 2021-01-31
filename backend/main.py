@@ -4,7 +4,7 @@ from datetime import datetime
 from passlib.apps import custom_app_context as pwd_context
 from imageai.Classification import ImageClassification
 import os
-from flask import Flask, request, make_response, current_app, g
+from flask import Flask, request, make_response, current_app, jsonify
 from flask_cors import CORS
 import logging
 import base64
@@ -83,13 +83,13 @@ def put_tags():
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
-            return add_success_headers()
+            return add_success_headers(1)
         else:
             response = {'file_name': image_name, 'tags': image_description}
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
-            return add_success_headers()
+            return add_success_headers(1)
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -107,14 +107,17 @@ def search():
         query = data["query"]
         es.indices.refresh(index="shopify-index")
 
-        res = es.search(index="test-index",
+        res = es.search(index="shopify-index",
                         body={"query": {"match": {"tags": query}}})
 
         app.logger.info("Got %d Hits:" % res['hits']['total']['value'])
-        for hit in res['hits']['hits']:
-            app.logger.info("%(timestamp)s %(author)s: %(text)s" %
-                            hit["_source"])
-        return add_success_headers()
+        # for hit in res['hits']['hits']:
+        #     app.logger.info("%(timestamp)s %(author)s: %(text)s" %
+        #                     hit["_source"])
+
+        res["hits"]["hits"] = res["hits"]["hits"][:5]
+        app.logger.info(len(res['hits']['hits']))
+        return add_success_headers(res["hits"]["hits"])
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -148,7 +151,7 @@ def signup():
             users.insert_one(user).inserted_id
             # app.logger.info('%s is the response', response)
 
-            return add_success_headers()
+            return add_success_headers(1)
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -213,14 +216,14 @@ def _build_cors_prelight_response():
     return response
 
 
-def add_success_headers():
-    response = make_response()
+def add_success_headers(data):
+    response = make_response(jsonify(data))
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('status', 200)
     response.headers.add('statusText', 'OK')
-    response.headers.add('data', 1)
     return response
 # def verify_password(self, password):
 #     return pwd_context.verify(password, self.password_hash)

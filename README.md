@@ -60,12 +60,10 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
-- Now perform a search on the data based on query (test it)
-- display top 5 images for now
+- display top 5 images for now, using v-for and lists on top of images
 
 - ADD
 
-  - In the event of a successful POST request to my Flask backend, index the data in the Elasticsearch database
   - How to add bulk images?
 
 - SEARCH

@@ -30,22 +30,35 @@ import axios from "axios";
 export default {
   name: "Search",
   data() {
-    {
-      return { query: "", permissions: "" };
-    }
+    return { query: "", permissions: "" };
   },
-  method: {
+  methods: {
     searchRequest: function() {
-      axios
-        .post(`http://127.0.0.1:5000/search`, {
-          query: this.query
-        })
-        .then(function(response) {
-          console.log(response);
-        })
-        .catch(function(error) {
-          console.log(error);
+      if (this.query.length > 0) {
+        axios
+          .post(`http://127.0.0.1:5000/search`, {
+            query: this.query
+          })
+          .then(function(response) {
+            console.log(response.data);
+          })
+          // eslint-disable-next-line no-unused-vars
+          .catch(function(error) {
+            return this.$buefy.toast.open({
+              message: "Sorry, please try again",
+              type: "is-danger",
+              position: "is-bottom",
+              duration: 6000
+            });
+          });
+      } else {
+        return this.$buefy.toast.open({
+          message: "Hold up, you haven't searched anything",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 6000
         });
+      }
     }
   }
 };

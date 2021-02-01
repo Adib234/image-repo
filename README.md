@@ -7,7 +7,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 **SEARCH function**
 
 - [x] from characteristics of images
-  >
+  > I have the user choose to describe their image when they add it or if they choose not to my route that handles adding images has an image classifier called ImageAI that uses a DenseNet model by Facebook AI research. This also gets stored in my Elasticsearch database so when users use my search bar, the query is searched upon in my Elasticsearch database.
 - [x] from text
   > I have a search bar on my client that accepts queries, once the search button is clicked on the client sends the query as a request to my Flask backend and in there I have an Elasticsearch database. The full-text search engine then returns the top 5 images that match the description
 - [] from an image (search for similar images)
@@ -60,21 +60,38 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
-- display top 5 images for now, using v-for and lists on top of images
+- verify user and logout route
+- adding in public and private
+- searching in public and private
+- encryption
 
 - ADD
 
   - How to add bulk images?
 
+  - encryption
+
 - SEARCH
 
-  - When we send the search request we look for tags in the Elasticsearch database, then we return the scores which gives the filename
   - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
 
 - AUTHENTICATION
+
   - make sure to verfiy the user and create the logout and login route
+
+- DELETE
+
+  - maybe to show all the possible images that they could delete, have something running in the background that picks up all the images from there albums and displays them?
+
+- SELL/BUY
+  - Stripe API?
 
 # Considerations
 
 - JWT
 - Verify that user is not bot and send verification email?
+
+# Some things I looked to do in the future/ improvements that could be made
+
+- I didn't quite understand how to modularize my routes with Flask which I should do in the future because having a lot of code in one file makes it hard to debug. The thing that prevented me was that Flask's factory application was confusing
+- How do I make methods in one child component be available in another child component with the same parent? This would allow code to be reused and not violate the DRY principle

@@ -83,6 +83,7 @@ export default {
       fileUpload: ""
     };
   },
+
   methods: {
     showImage: function() {
       var params = {

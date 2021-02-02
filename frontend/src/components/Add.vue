@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="logout button is-medium">Logout</button>
+    <button v-on:click="$emit('session')" class="logout button is-medium">Logout</button>
     <h2 class="is-size-2">Add</h2>
     <section class="hero">
       <div class="level">
@@ -73,6 +73,8 @@ var s3 = new AWS.S3({
 });
 export default {
   name: "Add",
+  props: { authenticated: Boolean },
+
   data() {
     return {
       uploaded: false,
@@ -182,25 +184,7 @@ export default {
         });
       }
     }
-  },
-  computed: {
-    // a computed getter
-    wordCount: function() {
-      return this.imageDescription.split(/\W+/).length;
-    }
-    // status: function() {
-    //   return this.imageDescription.split(/\W+/).length >= 0
-    //     ? "input is-medium is-success"
-    //     : "input is-medium is-danger";
-    // },
   }
-  // watch: {
-  //   // eslint-disable-next-line no-unused-vars
-  //   words: function(val) {
-  //     // eslint-disable-next-line no-unused-vars
-  //     val = this.imageDescription.split(/\W+/).length;
-  //   },
-  // },
 };
 </script>
 

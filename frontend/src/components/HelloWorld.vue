@@ -22,7 +22,10 @@
             </span>
           </p>
         </div>
-        <button class="login-button button is-primary is-light is-rounded">Log me in!</button>
+        <button
+          v-on:click="authenticate"
+          class="login-button button is-primary is-light is-rounded"
+        >Log me in!</button>
         <p>Or if you've never signed up before!</p>
         <router-link to="/signup" custom v-slot="{ navigate }">
           <button
@@ -39,7 +42,7 @@
       v-if="!authenticated"
       class="description is-size-2"
     >My goal is to help you securely upload images and be able to retrieve from a public repository and your own through text and other images 🙂</p>
-    <Add v-if="authenticated" />
+    <Add v-on:session="authenticated=false" v-if="authenticated" />
     <Search v-if="authenticated" />
   </div>
 </template>
@@ -47,10 +50,12 @@
 <script>
 import Add from "./Add";
 import Search from "./Search";
+import axios from "axios";
+
 export default {
   name: "HelloWorld",
   data() {
-    return { email: "", password: "", authenticated: true, validEmail: false };
+    return { email: "", password: "", authenticated: false, validEmail: false };
   },
 
   components: {
@@ -58,7 +63,79 @@ export default {
     Search
   },
   methods: {
-    authenticate: function() {}
+    authenticate: function() {
+      if (this.email.length == 0 && this.password.length == 0) {
+        return this.$buefy.toast.open({
+          message: "Missing credential(s)",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.email.length == 0 && this.password.length > 0) {
+        return this.$buefy.toast.open({
+          message: "Missing credential(s)",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.email.length > 0 && this.password.length == 0) {
+        return this.$buefy.toast.open({
+          message: "Missing credential(s)",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else if (this.password.length < 5) {
+        return this.$buefy.toast.open({
+          message: "Missing credential(s)",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } else {
+        if (
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+            this.email
+          )
+        ) {
+          let self = this;
+          // login works
+          axios
+            .post(`http://127.0.0.1:5000/login`, {
+              email: this.email,
+              password: this.password
+            })
+            // eslint-disable-next-line no-unused-vars
+            .then(function(response) {
+              self.authenticated = true;
+              self.email = "";
+              self.password = "";
+              return self.$buefy.toast.open({
+                message: "Login success!",
+                type: "is-success",
+                position: "is-bottom",
+                duration: 10000
+              });
+            })
+            // eslint-disable-next-line no-unused-vars
+            .catch(function(error) {
+              return self.$buefy.toast.open({
+                message: "Incorrect email or password",
+                type: "is-danger",
+                position: "is-bottom",
+                duration: 10000
+              });
+            });
+        } else {
+          return this.$buefy.toast.open({
+            message: "Please enter a valid email",
+            type: "is-danger",
+            position: "is-bottom",
+            duration: 10000
+          });
+        }
+      }
+    }
   }
 };
 </script>

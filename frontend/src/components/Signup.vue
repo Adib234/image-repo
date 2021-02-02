@@ -99,7 +99,7 @@ export default {
             .then(function(response) {
               return self.$buefy.toast.open({
                 message: "Signup success, please login now",
-                type: "is-danger",
+                type: "is-success",
                 position: "is-bottom",
                 duration: 10000
               });

@@ -2,6 +2,8 @@
 
 This is a Vue web app which has an image repository which you can hopefully search
 
+# Architecture diagram
+
 # Features
 
 **SEARCH function**
@@ -57,12 +59,14 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - Passwords should never be stored in a database, do some hashing to it and then discard it immediately after
 - If you're using environment variables you gotta export in the session of the shell you are working on in the terminal, having a .env sometimes doesn't do everthing
 - Enabling CORS solves CORS issues with the server but not the client, when you send a request back, you must have `Access-Control-Allow-Origin:*` in your response header. Otherwise you're going to have server saying 200 but client throwing a bad error.
+- Why hash passwords instead of encrypt?
+- To prevent the data from being sent in real text, secure requests using HTTP basic authentication so your hash isn't in vain
+- To change the state of the parent component, pass an event down the child and on the event the child will `$emit(event)`, used this to logout from my component
 
 # To do
 
-- verify user and logout route
-- adding in public and private
-- searching in public and private
+- adding in private
+- searching in private
 - encryption
 
 - ADD
@@ -75,10 +79,6 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
   - TinyEngine [MatchEngine API](https://services.tineye.com/developers/matchengine/api_reference/search) for searching images with images?
 
-- AUTHENTICATION
-
-  - make sure to verfiy the user and create the logout and login route
-
 - DELETE
 
   - maybe to show all the possible images that they could delete, have something running in the background that picks up all the images from there albums and displays them?
@@ -86,9 +86,25 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - SELL/BUY
   - Stripe API?
 
+# Technologies used
+
+### Backend
+
+- Flask as server
+- Passlib to hash passwords
+- MongoDB as database
+- ImageAI to classify images
+- Elasticsearch as full-text search engine
+
+### Frontend
+
+- Vue.js for frontend framework
+- Axios for making calls to server
+- Bulma as CSS framework
+- AWS-SDK to connect to AWS-S3 for using their buckets to store images for public and private repositories
+
 # Considerations
 
-- JWT
 - Verify that user is not bot and send verification email?
 
 # Some things I looked to do in the future/ improvements that could be made

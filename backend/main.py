@@ -1,7 +1,7 @@
 from datetime import datetime
 from pymongo import MongoClient
 from datetime import datetime
-from passlib.apps import custom_app_context as pwd_context
+from passlib.hash import pbkdf2_sha256
 from imageai.Classification import ImageClassification
 import os
 from flask import Flask, request, make_response, current_app, jsonify
@@ -11,6 +11,8 @@ import base64
 from flask_api import status
 import pprint
 from elasticsearch import Elasticsearch
+from flask_httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
 
 es = Elasticsearch()
 
@@ -39,6 +41,7 @@ users = db["users"]
 
 
 @app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
+@auth.login_required
 def put_tags():
 
     if request.method == 'POST':
@@ -99,6 +102,7 @@ def put_tags():
 
 
 @app.route('/search', methods=['POST', 'OPTIONS'])
+@auth.login_required
 def search():
     if request.method == 'POST':
 
@@ -145,7 +149,7 @@ def signup():
 
         else:
             user["email"] = email
-            password_hash = pwd_context.encrypt(password)
+            password_hash = pbkdf2_sha256.hash(password)
             user["password_hash"] = password_hash
             user["signed_up"] = datetime.utcnow()
             users.insert_one(user).inserted_id
@@ -160,52 +164,38 @@ def signup():
             "Weird - don't know how to handle method {}".format(request.method))
 
 
-# @app.route('/login', methods=['POST', 'OPTIONS'])
-# def login():
-#     if request.method == 'POST':
-#         app.logger.info('%s is the request', request.json)
+@app.route('/login', methods=['POST', 'OPTIONS'])
+@auth.login_required
+def login():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
 
-#         data = request.json
-#         app.logger.info('%s is the data', data)
+        data = request.json
+        app.logger.info('%s is the data', data)
 
-#         image = data["image"]
-#         image_name = data["fileName"]
+        email = data["email"]
+        password = data["password"]
+        # users.insert_one(user).inserted_id
 
-#         response = {'file_name': image_name, 'tags': final}
+        if users.count_documents({"email": email}) == 0:
+            return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
-#         app.logger.info('%s is the response', response)
+        else:
 
-#         return response
+            user_info = users.find_one({"email": email})
+            app.logger.info("%s is the hashed password",
+                            user_info["password_hash"])
 
-#     elif request.method == "OPTIONS":  # CORS preflight
-#         return _build_cors_prelight_response()
-#     else:
-#         raise RuntimeError(
-#             "Weird - don't know how to handle method {}".format(request.method))
+            if pbkdf2_sha256.verify(password, user_info["password_hash"]):
+                return add_success_headers(1)
+            else:
+                return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
-
-# @app.route('/logout', methods=['POST', 'OPTIONS'])
-# def logout():
-#     if request.method == 'POST':
-#         app.logger.info('%s is the request', request.json)
-
-#         data = request.json
-#         app.logger.info('%s is the data', data)
-
-#         image = data["image"]
-#         image_name = data["fileName"]
-
-#         response = {'file_name': image_name, 'tags': final}
-
-#         app.logger.info('%s is the response', response)
-
-#         return response
-
-#     elif request.method == "OPTIONS":  # CORS preflight
-#         return _build_cors_prelight_response()
-#     else:
-#         raise RuntimeError(
-#             "Weird - don't know how to handle method {}".format(request.method))
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
 
 
 def _build_cors_prelight_response():
@@ -225,5 +215,3 @@ def add_success_headers(data):
     response.headers.add('status', 200)
     response.headers.add('statusText', 'OK')
     return response
-# def verify_password(self, password):
-#     return pwd_context.verify(password, self.password_hash)

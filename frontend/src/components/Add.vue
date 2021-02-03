@@ -40,9 +40,10 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
-              <a href="#" class="dropdown-item">Overview</a>
-              <a href="#" class="dropdown-item">Modifiers</a>
-              <a href="#" class="dropdown-item">Grid</a>
+              <div v-for="name in userBuckets" :key="name">
+                <a class="dropdown-item">{{name}}</a>
+              </div>
+              <!-- <a href="#" class="dropdown-item">wahy</a> -->
             </div>
           </div>
         </div>

@@ -65,7 +65,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
-- adding in private, pass props to components (email), hash bucket names
+- adding in private, hash bucket names, prevent duplicate bucket names in user
 - searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache
 - encryption
 - bulk image add

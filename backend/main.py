@@ -131,6 +131,7 @@ def search():
 
 
 @app.route('/signup', methods=['POST', 'OPTIONS'])
+@auth.login_required
 def signup():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -190,6 +191,52 @@ def login():
                 return add_success_headers(1)
             else:
                 return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route("/add_bucket_name", methods=['POST', 'OPTIONS'])
+def add_bucket_name():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
+
+        data = request.json
+        app.logger.info('%s is the data', data)
+
+        email = data["email"]
+        bucket_name = data["bucketName"]
+
+        users.update_one({"email": email}, {
+                         '$push': {'bucket_name': bucket_name}})
+
+        return add_success_headers(1)
+
+    elif request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
+    else:
+        raise RuntimeError(
+            "Weird - don't know how to handle method {}".format(request.method))
+
+
+@app.route("/get_all_buckets", methods=['POST', 'OPTIONS'])
+def get_all_buckets():
+    if request.method == 'POST':
+        app.logger.info('%s is the request', request.json)
+
+        data = request.json
+        app.logger.info('%s is the data', data)
+
+        email = data["email"]
+
+        user_info = users.find_one({"email": email})
+
+        response = user_info["bucket_name"]
+
+        return add_success_headers(response)
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()

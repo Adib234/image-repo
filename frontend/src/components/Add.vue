@@ -23,7 +23,38 @@
           Private
         </label>
       </div>
-
+      <div v-if="permissions=='Private'" class="private">
+        <div v-bind:class="dropdown">
+          <div class="dropdown-trigger">
+            <button
+              v-on:click="makeActive"
+              class="button"
+              aria-haspopup="true"
+              aria-controls="dropdown-menu3"
+            >
+              <span>Private albums</span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              <a href="#" class="dropdown-item">Overview</a>
+              <a href="#" class="dropdown-item">Modifiers</a>
+              <a href="#" class="dropdown-item">Grid</a>
+            </div>
+          </div>
+        </div>
+        <button v-on:click="addBucket" class="add-album button">Add new album</button>
+        <input
+          v-model="bucketUserName"
+          v-if="adding"
+          class="bucket input"
+          type="text"
+          placeholder="Album name"
+        />
+      </div>
       <div class="control1">
         <label class="radio">
           <input type="radio" value="Single" v-model="fileUpload" />
@@ -73,7 +104,7 @@ var s3 = new AWS.S3({
 });
 export default {
   name: "Add",
-  props: { authenticated: Boolean },
+  props: { email: String },
 
   data() {
     return {
@@ -82,7 +113,11 @@ export default {
       imageUrl: "",
       imageDescription: "",
       permissions: "",
-      fileUpload: ""
+      fileUpload: "",
+      dropdown: "dropdown",
+      adding: false,
+      bucketUserName: "",
+      userBuckets: []
     };
   },
 
@@ -183,6 +218,58 @@ export default {
           duration: 3000
         });
       }
+    },
+    makeActive: function() {
+      //request works
+      if (this.dropdown == "dropdown") {
+        this.dropdown = "dropdown is-active";
+        let self = this;
+        axios
+          .post(`http://127.0.0.1:5000/get_all_buckets`, {
+            email: this.email
+          })
+          .then(function(response) {
+            console.log(response);
+            self.userBuckets = response.data;
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      } else {
+        this.dropdown = "dropdown";
+      }
+    },
+    addBucket: function() {
+      this.adding = true;
+      let self = this;
+
+      if (this.bucketUserName.length == 0) {
+        return this.$buefy.toast.open({
+          message: "Please enter something for your album name",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 3000
+        });
+      } else {
+        // request works
+        axios
+          .post(`http://127.0.0.1:5000/add_bucket_name`, {
+            email: this.email,
+            bucketName: this.bucketUserName
+          })
+          .then(function(response) {
+            console.log(response);
+            return self.$buefy.toast.open({
+              message: "Yay your bucket was added",
+              type: "is-success",
+              position: "is-bottom",
+              duration: 3000
+            });
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
     }
   }
 };
@@ -218,5 +305,17 @@ export default {
 
 .logout {
   padding: 0 5rem 0 5rem;
+}
+.private {
+  margin-bottom: 1rem;
+}
+.add-album {
+  padding: 1rem 3rem 1rem 3rem;
+  margin-left: 1rem;
+}
+
+.bucket {
+  width: 25%;
+  margin-left: 1rem;
 }
 </style>

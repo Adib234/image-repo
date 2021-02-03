@@ -59,15 +59,20 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - Passwords should never be stored in a database, do some hashing to it and then discard it immediately after
 - If you're using environment variables you gotta export in the session of the shell you are working on in the terminal, having a .env sometimes doesn't do everthing
 - Enabling CORS solves CORS issues with the server but not the client, when you send a request back, you must have `Access-Control-Allow-Origin:*` in your response header. Otherwise you're going to have server saying 200 but client throwing a bad error.
-- Why hash passwords instead of encrypt?
+- Why hash passwords instead of encrypt? what happens when two hashes are the same
 - To prevent the data from being sent in real text, secure requests using HTTP basic authentication so your hash isn't in vain
 - To change the state of the parent component, pass an event down the child and on the event the child will `$emit(event)`, used this to logout from my component
 
 # To do
 
-- adding in private
-- searching in private
+- adding in private, pass props to components (email), hash bucket names
+- searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache
 - encryption
+- bulk image add
+- searching images with images
+- Jest
+- Dockerize
+- Look at twelve factor app
 
 - ADD
 
@@ -107,7 +112,25 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 - Verify that user is not bot and send verification email?
 
-# Some things I looked to do in the future/ improvements that could be made
+# Some things I look to do in the future/ improvements that could be made
 
 - I didn't quite understand how to modularize my routes with Flask which I should do in the future because having a lot of code in one file makes it hard to debug. The thing that prevented me was that Flask's factory application was confusing
 - How do I make methods in one child component be available in another child component with the same parent? This would allow code to be reused and not violate the DRY principle
+- Perform some validation when users enter a name for their private albums since the name of their private album is the bucket name
+
+# Twelve factor app
+
+| Factor              | Description                                                      | Did we do it | How did we do it/not do it? |
+| ------------------- | ---------------------------------------------------------------- | ------------ | --------------------------- |
+| Codebase            | One codebase tracked in revision control, deploys                |              |                             |
+| Dependencies        | Explicity declare and isolate dependencies                       |              |                             |
+| Config              | Store config in the environment                                  |              |                             |
+| Backing services    | Treat backing services as attached services                      |              |                             |
+| Build, release, run | Strictly separate build and run stages                           |              |                             |
+| Processes           | Execute the app as one or mroe stateless processes               |              |                             |
+| Port binding        | Export services via port binding                                 |              |                             |
+| Concurrency         | Scale out via the process model                                  |              |                             |
+| Disposability       | Maximize robustness with fast startup and graceful shutdown      |              |                             |
+| Dev/prod parity     | Keep development, staging, and production as similar as possible |              |                             |
+| Logs                | Treat logs as event streams                                      |              |
+| Admin processes     | Run admin/management tasks as one-off processes                  |              |                             |

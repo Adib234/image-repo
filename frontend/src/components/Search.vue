@@ -50,6 +50,8 @@ export default {
   data() {
     return { query: "", permissions: "", imageUrls: [] };
   },
+  props: { email: String },
+
   methods: {
     searchRequest: function() {
       let self = this;

@@ -65,14 +65,14 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
-- adding in private, hash bucket names, prevent duplicate bucket names in user
-- searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache
+- adding in private, when a user is first created, their bucket is created and each time they add a new private repo a new bucket is created
+- searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache might also want to use a redis cache for getting the list of buckets since a request is being sent each time we click on the dropdown
 - encryption
 - bulk image add
 - searching images with images
 - Jest
 - Dockerize
-- Look at twelve factor app
+- Look at twelve factor app, figure out production
 
 - ADD
 
@@ -111,6 +111,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 # Considerations
 
 - Verify that user is not bot and send verification email?
+- Hash bucket names; hash bucket names, everytime you successfully add a new bucket to user create the actual bucket which is hashed in awss3, keep the hash and the actual name in the array,
 
 # Some things I look to do in the future/ improvements that could be made
 

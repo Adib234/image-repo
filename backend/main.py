@@ -11,8 +11,6 @@ import base64
 from flask_api import status
 import pprint
 from elasticsearch import Elasticsearch
-from flask_httpauth import HTTPBasicAuth
-auth = HTTPBasicAuth()
 
 es = Elasticsearch()
 
@@ -41,7 +39,6 @@ users = db["users"]
 
 
 @app.route('/tags', methods=['GET', 'POST', 'OPTIONS'])
-@auth.login_required
 def put_tags():
 
     if request.method == 'POST':
@@ -102,7 +99,6 @@ def put_tags():
 
 
 @app.route('/search', methods=['POST', 'OPTIONS'])
-@auth.login_required
 def search():
     if request.method == 'POST':
 
@@ -131,7 +127,6 @@ def search():
 
 
 @app.route('/signup', methods=['POST', 'OPTIONS'])
-@auth.login_required
 def signup():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -166,7 +161,6 @@ def signup():
 
 
 @app.route('/login', methods=['POST', 'OPTIONS'])
-@auth.login_required
 def login():
     if request.method == 'POST':
         app.logger.info('%s is the request', request.json)
@@ -209,11 +203,16 @@ def add_bucket_name():
 
         email = data["email"]
         bucket_name = data["bucketName"]
+        app.logger.info('%s is the', users.find_one(
+            {"email": email})['bucket_name'])
+        if bucket_name in users.find_one({"email": email})['bucket_name']:
+            return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
-        users.update_one({"email": email}, {
-                         '$push': {'bucket_name': bucket_name}})
+        else:
+            users.update_one({"email": email}, {
+                '$push': {'bucket_name': bucket_name}})
 
-        return add_success_headers(1)
+            return add_success_headers(1)
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()

@@ -23,7 +23,13 @@
           Private
         </label>
       </div>
+
       <div v-if="permissions=='Private'" class="private">
+        <p v-if="dropdownClicked">
+          The album you chose and will upload to is
+          <strong>{{privateBucket}}</strong>
+        </p>
+
         <div v-bind:class="dropdown">
           <div class="dropdown-trigger">
             <button
@@ -41,7 +47,7 @@
           <div class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
               <div v-for="name in userBuckets" :key="name">
-                <a class="dropdown-item">{{name}}</a>
+                <a v-on:click="setBucket(name)" class="dropdown-item">{{name}}</a>
               </div>
               <!-- <a href="#" class="dropdown-item">wahy</a> -->
             </div>
@@ -89,7 +95,7 @@
 import AWS from "aws-sdk";
 import axios from "axios";
 
-let bucketName = process.env.VUE_APP_BUCKET_NAME;
+let publicBucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
 let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
 
@@ -101,7 +107,7 @@ AWS.config.update({
 });
 var s3 = new AWS.S3({
   apiVersion: "2006-03-01",
-  params: { Bucket: bucketName }
+  params: { Bucket: publicBucketName }
 });
 export default {
   name: "Add",
@@ -117,16 +123,18 @@ export default {
       fileUpload: "",
       dropdown: "dropdown",
       adding: false,
-      bucketUserName: "",
-      userBuckets: []
+      bucketUserName: "", //public or private bucket, the one they choose to upload with
+      userBuckets: [],
+      privateBucket: "", // the private bucket they select from the dropdown
+      dropdownClicked: false
     };
   },
 
   methods: {
     showImage: function() {
       var params = {
-        Bucket: bucketName,
-        Key: `${bucketName}/` + this.fileNameGlobal
+        Bucket: publicBucketName,
+        Key: `${publicBucketName}/` + this.fileNameGlobal
       };
       let getImage = s3.getObject(params);
 
@@ -145,7 +153,6 @@ export default {
 
           // tags == 0 test passes
           // tags > 1 works
-          // * why does client give me bad request when server says 200
           if (self.permissions === "Public") {
             axios
               .post(`http://127.0.0.1:5000/tags`, {
@@ -160,7 +167,9 @@ export default {
                 console.log(error);
               });
           }
-          // else {} private permissions
+          // else{
+
+          // }
         },
         function(err) {
           console.log(err, err.stack);
@@ -177,10 +186,10 @@ export default {
           var fileName = file?.name;
           this.fileNameGlobal = fileName;
 
-          var filePath = `${bucketName}/` + fileName;
+          var filePath = `${publicBucketName}/` + fileName;
 
           var upload = s3.upload({
-            Bucket: bucketName,
+            Bucket: publicBucketName,
             Key: filePath,
             Body: file
           });
@@ -269,8 +278,18 @@ export default {
           })
           .catch(function(error) {
             console.log(error);
+            return self.$buefy.toast.open({
+              message: "Please do not enter the same bucket name",
+              type: "is-danger",
+              position: "is-bottom",
+              duration: 3000
+            });
           });
       }
+    },
+    setBucket: function(val) {
+      this.privateBucket = val;
+      this.dropdownClicked = true;
     }
   }
 };

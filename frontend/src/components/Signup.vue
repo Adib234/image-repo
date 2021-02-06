@@ -48,6 +48,21 @@
 
 <script>
 import axios from "axios";
+import AWS from "aws-sdk";
+
+let publicBucketName = process.env.VUE_APP_BUCKET_NAME;
+let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
+let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
+AWS.config.update({
+  region: bucketRegion,
+  credentials: new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: IdentityPoolId
+  })
+});
+var s3 = new AWS.S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: publicBucketName }
+});
 export default {
   name: "Signup",
   data() {
@@ -97,6 +112,20 @@ export default {
             })
             // eslint-disable-next-line no-unused-vars
             .then(function(response) {
+              var params = {
+                Bucket: publicBucketName,
+                Key: `${self.email}/`
+              };
+              // when user creates a new account a folder in the bucket is create for them,
+              // so they can put there private images if they want to in the future
+              // *this works
+              s3.putObject(params, function(err, data) {
+                if (err) {
+                  console.log("Error creating the folder: ", err);
+                } else {
+                  console.log(data);
+                }
+              });
               return self.$buefy.toast.open({
                 message: "Signup success, please login now",
                 type: "is-success",

@@ -156,6 +156,7 @@ a {
   color: #42b983;
 }
 .login {
+  min-width: 15rem;
   margin-right: 24rem;
   padding: 2rem;
   margin-left: 24rem;

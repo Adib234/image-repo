@@ -48,6 +48,11 @@ def put_tags():
         image = data["image"]
         image_name = data["fileName"]
         image_description = data["tags"]
+        private = data["private"]
+        email = data["email"]
+        if private:
+            users.update_one({"email": email}, {
+                '$push': {'images_private': image_name}})
 
         if len(image_description) == 0:
             execution_path = os.getcwd()
@@ -83,6 +88,7 @@ def put_tags():
             res = es.index(index="shopify-index", body=response)
 
             app.logger.info('%s is the elasticsearch response', res['result'])
+
             return add_success_headers(1)
         else:
             response = {'file_name': image_name, 'tags': image_description}
@@ -170,7 +176,6 @@ def login():
 
         email = data["email"]
         password = data["password"]
-        # users.insert_one(user).inserted_id
 
         if users.count_documents({"email": email}) == 0:
             return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
@@ -203,11 +208,11 @@ def add_bucket_name():
 
         email = data["email"]
         bucket_name = data["bucketName"]
+
         app.logger.info('%s is the', users.find_one(
             {"email": email})['bucket_name'])
         if bucket_name in users.find_one({"email": email})['bucket_name']:
             return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
-
         else:
             users.update_one({"email": email}, {
                 '$push': {'bucket_name': bucket_name}})

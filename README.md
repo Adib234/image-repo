@@ -19,8 +19,8 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 - [] one / bulk / enormous amount of images
   >
-- [] private or public (permissions)
-  >
+- [x] private or public (permissions)
+  > I enabled permissions through authentication, so when you first sign up a folder is in the bucket. The user has the choice to either upload to the public repo which means the toggled 'Public' in their option. If they toggled 'Private' then that means that it will be in a folder that they have selected from the dropdown.
 - [] secure uploading and stored images
   >
 
@@ -65,7 +65,6 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # To do
 
-- adding in private, when a user is first created, their bucket is created and each time they add a new private repo a new bucket is created
 - searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache might also want to use a redis cache for getting the list of buckets since a request is being sent each time we click on the dropdown
 - encryption
 - bulk image add
@@ -118,6 +117,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - I didn't quite understand how to modularize my routes with Flask which I should do in the future because having a lot of code in one file makes it hard to debug. The thing that prevented me was that Flask's factory application was confusing
 - How do I make methods in one child component be available in another child component with the same parent? This would allow code to be reused and not violate the DRY principle
 - Perform some validation when users enter a name for their private albums since the name of their private album is the bucket name
+- Because of bad planning, when the user creates a new account for some reason the home page and signup page have the same route
 
 # Twelve factor app
 

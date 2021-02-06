@@ -64,11 +64,11 @@
       </div>
       <div class="control1">
         <label class="radio">
-          <input type="radio" value="Single" v-model="fileUpload" />
+          <input type="radio" value="Single" v-model="quantity" />
           Single
         </label>
         <label class="radio">
-          <input type="radio" value="Bulk" v-model="fileUpload" />
+          <input type="radio" value="Bulk" v-model="quantity" />
           Bulk
         </label>
       </div>
@@ -82,11 +82,6 @@
     <div class="container">
       <p v-if="uploaded" class="is-size-3">The image you just uploaded</p>
       <img class="img" v-if="uploaded" :src="imageUrl" />
-
-      <!-- <img
-        class="img"
-        src="https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
-      />-->
     </div>
   </div>
 </template>
@@ -119,23 +114,29 @@ export default {
       fileNameGlobal: "",
       imageUrl: "",
       imageDescription: "",
-      permissions: "",
-      fileUpload: "",
+      permissions: "", // public or private
       dropdown: "dropdown",
       adding: false,
-      bucketUserName: "", //public or private bucket, the one they choose to upload with
+      bucketUserName: "", //name of the bucket that the image will be added to, nothing if it's public
       userBuckets: [],
       privateBucket: "", // the private bucket they select from the dropdown
-      dropdownClicked: false
+      dropdownClicked: false,
+      quantity: "" // single or bulk
     };
   },
 
   methods: {
     showImage: function() {
-      var params = {
-        Bucket: publicBucketName,
-        Key: `${publicBucketName}/` + this.fileNameGlobal
-      };
+      let params =
+        this.permissions === "Public"
+          ? {
+              Bucket: publicBucketName,
+              Key: `${publicBucketName}/` + this.fileNameGlobal
+            }
+          : {
+              Bucket: publicBucketName,
+              Key: `${this.email}/${this.privateBucket}/` + this.fileNameGlobal
+            };
       let getImage = s3.getObject(params);
 
       let promise = getImage.promise();
@@ -153,23 +154,21 @@ export default {
 
           // tags == 0 test passes
           // tags > 1 works
-          if (self.permissions === "Public") {
-            axios
-              .post(`http://127.0.0.1:5000/tags`, {
-                fileName: self.fileNameGlobal,
-                image: base64encode,
-                tags: self.imageDescription
-              })
-              .then(function(response) {
-                console.log(response);
-              })
-              .catch(function(error) {
-                console.log(error);
-              });
-          }
-          // else{
-
-          // }
+          axios
+            .post(`http://127.0.0.1:5000/tags`, {
+              fileName: self.fileNameGlobal,
+              image: base64encode,
+              tags: self.imageDescription,
+              private: self.permissions === "Private" ? true : false, // if its private, this gets added to the user info in our database
+              // so that when they want to search from their private repos they can do so
+              email: self.email
+            })
+            .then(function(response) {
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         },
         function(err) {
           console.log(err, err.stack);
@@ -180,48 +179,97 @@ export default {
       let self = this;
 
       var files = document.getElementById("fileUpload").files;
-      try {
-        if (files) {
-          var file = files[0];
-          var fileName = file?.name;
-          this.fileNameGlobal = fileName;
 
-          var filePath = `${publicBucketName}/` + fileName;
+      if (this.quantity === "Single") {
+        // single upload
+        try {
+          if (files) {
+            let file = files[0];
+            let fileName = file?.name;
+            this.fileNameGlobal = fileName;
 
-          var upload = s3.upload({
-            Bucket: publicBucketName,
-            Key: filePath,
-            Body: file
-          });
-          var promise = upload.promise();
+            if (self.permissions === "Public") {
+              let filePath = `${publicBucketName}/` + fileName;
 
-          promise.then(
-            // eslint-disable-next-line no-unused-vars
-            function(data) {
-              self.uploaded = true;
-
-              self.showImage();
-              return self.$buefy.toast.open({
-                message: "Yay, your file has been uploaded!",
-                type: "is-success",
-                position: "is-bottom",
-                duration: 6000
+              let upload = s3.upload({
+                Bucket: publicBucketName,
+                Key: filePath,
+                Body: file
               });
-            },
-            // eslint-disable-next-line no-unused-vars
-            function(err) {
-              return self.$buefy.toast.open({
-                message:
-                  "Your file failed to be uploaded, please try again or later",
-                type: "is-danger",
-                position: "is-bottom",
-                duration: 6000
+              let promise = upload.promise();
+
+              promise.then(
+                // eslint-disable-next-line no-unused-vars
+                function(data) {
+                  self.uploaded = true;
+
+                  self.showImage();
+                  return self.$buefy.toast.open({
+                    message: "Yay, your file has been uploaded!",
+                    type: "is-success",
+                    position: "is-bottom",
+                    duration: 6000
+                  });
+                },
+                // eslint-disable-next-line no-unused-vars
+                function(err) {
+                  return self.$buefy.toast.open({
+                    message:
+                      "Your file failed to be uploaded, please try again or later",
+                    type: "is-danger",
+                    position: "is-bottom",
+                    duration: 6000
+                  });
+                }
+              );
+            } else {
+              let filePath = `${self.email}/${self.privateBucket}/` + fileName;
+
+              let upload = s3.upload({
+                Bucket: publicBucketName,
+                Key: filePath,
+                Body: file
               });
+              let promise = upload.promise();
+
+              promise.then(
+                // eslint-disable-next-line no-unused-vars
+                function(data) {
+                  self.uploaded = true;
+
+                  self.showImage();
+                  return self.$buefy.toast.open({
+                    message: "Yay, your file has been uploaded!",
+                    type: "is-success",
+                    position: "is-bottom",
+                    duration: 6000
+                  });
+                },
+                // eslint-disable-next-line no-unused-vars
+                function(err) {
+                  return self.$buefy.toast.open({
+                    message:
+                      "Your file failed to be uploaded, please try again or later",
+                    type: "is-danger",
+                    position: "is-bottom",
+                    duration: 6000
+                  });
+                }
+              );
             }
-          );
+          }
+        } catch (err) {
+          return self.$buefy.toast.open({
+            message: "Please upload something",
+            type: "is-danger",
+            position: "is-bottom",
+            duration: 3000
+          });
         }
-      } catch (err) {
-        return self.$buefy.toast.open({
+      } else if (this.quantity === "Bulk") {
+        return 0;
+      } else {
+        return this.$buefy.toast.open({
           message: "Please upload something",
           type: "is-danger",
           position: "is-bottom",
@@ -269,6 +317,20 @@ export default {
           })
           .then(function(response) {
             console.log(response);
+            var params = {
+              Bucket: publicBucketName,
+              Key: `${self.email}/${self.bucketUserName}/`
+            };
+            // when user creates a new account a folder in the bucket is create for them,
+            // so they can put there private images if they want to in the future
+            // *this works
+            s3.putObject(params, function(err, data) {
+              if (err) {
+                console.log("Error creating the folder: ", err);
+              } else {
+                console.log(data);
+              }
+            });
             return self.$buefy.toast.open({
               message: "Yay your bucket was added",
               type: "is-success",

@@ -65,6 +65,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - Usually the two key advantages of client side caching are:
   - Data is available with a very small latency.
   - The database system receives less queries, allowing to serve the same dataset with a smaller number of nodes.
+- Used Redis to decrease time required to send a response from my backend my 6x! REDIS IS WOW :)
 
 # To do
 
@@ -121,6 +122,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - How do I make methods in one child component be available in another child component with the same parent? This would allow code to be reused and not violate the DRY principle
 - Perform some validation when users enter a name for their private albums since the name of their private album is the bucket name
 - Because of bad planning, when the user creates a new account for some reason the home page and signup page have the same route
+- I tried refactoring with Flask but it didn't work, from now on I will keep routes skinny and middlewares fat instead of having code that connects to the database or does some processing on the request be in the same file as the routes.
 
 # Twelve factor app
 

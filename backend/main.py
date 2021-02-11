@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo import MongoClient
 from datetime import datetime
 from passlib.hash import pbkdf2_sha256
@@ -11,6 +11,8 @@ import base64
 from flask_api import status
 import pprint
 from elasticsearch import Elasticsearch
+import redis
+import sys
 
 es = Elasticsearch()
 
@@ -229,18 +231,14 @@ def add_bucket_name():
 @app.route("/get_all_buckets", methods=['POST', 'OPTIONS'])
 def get_all_buckets():
     if request.method == 'POST':
-        app.logger.info('%s is the request', request.json)
 
         data = request.json
         app.logger.info('%s is the data', data)
 
-        email = data["email"]
+        response = cache_buckets(data["email"])
+        app.logger.info('%s is the data', response)
 
-        user_info = users.find_one({"email": email})
-
-        response = user_info["bucket_name"]
-
-        return add_success_headers(response)
+        return add_success_headers(response[data['email']])
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()
@@ -266,3 +264,65 @@ def add_success_headers(data):
     response.headers.add('status', 200)
     response.headers.add('statusText', 'OK')
     return response
+
+
+def redis_connect() -> redis.client.Redis:
+    try:
+        client = redis.Redis(
+            host="localhost",
+            port=6379,
+            db=0,
+            socket_timeout=5,
+        )
+        ping = client.ping()
+        if ping is True:
+            return client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)
+
+
+client = redis_connect()
+
+
+def get_routes_from_cache(key: str) -> str:
+    """Data from redis."""
+
+    val = client.get(key)
+    return val
+
+
+def set_routes_to_cache(key: str, value: str) -> bool:
+    """Data to redis."""
+
+    state = client.setex(key, timedelta(seconds=3600), value=value,)
+    return state
+
+
+def cache_buckets(email: str) -> dict:
+
+    # First it looks for the data in redis cache
+    data = get_routes_from_cache(key=email)
+
+    # If cache is found then serves the data from cache
+    if data is not None:
+        data = json.loads(data)
+        data["cache"] = True
+        return data
+
+    else:
+        # If cache is not found then sends request to database
+
+        user_info = users.find_one({"email": email})
+
+        data = {email: user_info["bucket_name"]}
+
+        # This block sets saves the respose to redis and serves it directly
+        if data.get("code") == "Ok":
+            data["cache"] = False
+            data = json.dumps(data)
+            state = set_routes_to_cache(key=email, value=data)
+
+            if state is True:
+                return json.loads(data)
+        return data

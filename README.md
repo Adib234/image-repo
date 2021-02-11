@@ -62,6 +62,9 @@ This is a Vue web app which has an image repository which you can hopefully sear
 - Why hash passwords instead of encrypt? what happens when two hashes are the same
 - To prevent the data from being sent in real text, secure requests using HTTP basic authentication so your hash isn't in vain
 - To change the state of the parent component, pass an event down the child and on the event the child will `$emit(event)`, used this to logout from my component
+- Usually the two key advantages of client side caching are:
+  - Data is available with a very small latency.
+  - The database system receives less queries, allowing to serve the same dataset with a smaller number of nodes.
 
 # To do
 
@@ -121,17 +124,17 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # Twelve factor app
 
-| Factor              | Description                                                      | Did we do it | How did we do it/not do it? |
-| ------------------- | ---------------------------------------------------------------- | ------------ | --------------------------- |
-| Codebase            | One codebase tracked in revision control, deploys                |              |                             |
-| Dependencies        | Explicity declare and isolate dependencies                       |              |                             |
-| Config              | Store config in the environment                                  |              |                             |
-| Backing services    | Treat backing services as attached services                      |              |                             |
-| Build, release, run | Strictly separate build and run stages                           |              |                             |
-| Processes           | Execute the app as one or mroe stateless processes               |              |                             |
-| Port binding        | Export services via port binding                                 |              |                             |
-| Concurrency         | Scale out via the process model                                  |              |                             |
-| Disposability       | Maximize robustness with fast startup and graceful shutdown      |              |                             |
-| Dev/prod parity     | Keep development, staging, and production as similar as possible |              |                             |
-| Logs                | Treat logs as event streams                                      |              |
-| Admin processes     | Run admin/management tasks as one-off processes                  |              |                             |
+| Factor              | Description                                                      | Did we do it       | How did we do it/not do it?                                                                               |
+| ------------------- | ---------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
+| Codebase            | One codebase tracked in revision control, deploys                | :heavy_check_mark: | My app uses Git as the version control system and this repo is the copy of the revision tracking database |
+| Dependencies        | Explicity declare and isolate dependencies                       |                    |                                                                                                           |
+| Config              | Store config in the environment                                  |                    |                                                                                                           |
+| Backing services    | Treat backing services as attached services                      |                    |                                                                                                           |
+| Build, release, run | Strictly separate build and run stages                           |                    |                                                                                                           |
+| Processes           | Execute the app as one or mroe stateless processes               |                    |                                                                                                           |
+| Port binding        | Export services via port binding                                 |                    |                                                                                                           |
+| Concurrency         | Scale out via the process model                                  |                    |                                                                                                           |
+| Disposability       | Maximize robustness with fast startup and graceful shutdown      |                    |                                                                                                           |
+| Dev/prod parity     | Keep development, staging, and production as similar as possible |                    |                                                                                                           |
+| Logs                | Treat logs as event streams                                      |                    |
+| Admin processes     | Run admin/management tasks as one-off processes                  |                    |                                                                                                           |

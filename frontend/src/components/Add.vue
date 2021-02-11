@@ -361,22 +361,18 @@ export default {
 .level {
   padding: 0 2rem 0.5rem 2rem;
 }
-
 .input {
   margin-right: 1rem;
 }
-
 .is-size-2 {
   margin-top: 1rem;
 }
-
 .img {
   height: 15rem;
 }
 .button-parent {
   margin-bottom: 2rem;
 }
-
 .control {
   margin-bottom: 1rem;
 }
@@ -384,7 +380,6 @@ export default {
   margin-bottom: 1rem;
   margin-right: 1.2rem;
 }
-
 .logout {
   padding: 0 5rem 0 5rem;
 }
@@ -395,7 +390,6 @@ export default {
   padding: 1rem 3rem 1rem 3rem;
   margin-left: 1rem;
 }
-
 .bucket {
   width: 25%;
   margin-left: 1rem;

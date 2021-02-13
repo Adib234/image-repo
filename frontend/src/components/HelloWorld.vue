@@ -55,7 +55,7 @@ import axios from "axios";
 export default {
   name: "HelloWorld",
   data() {
-    return { email: "", password: "", authenticated: true, validEmail: false };
+    return { email: "", password: "", authenticated: false, validEmail: false };
   },
 
   components: {

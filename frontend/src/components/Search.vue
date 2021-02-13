@@ -59,7 +59,9 @@ export default {
       if (this.query.length > 0) {
         axios
           .post(`http://127.0.0.1:5000/search`, {
-            query: this.query
+            query: this.query,
+            permissions: this.permissions,
+            email: this.email
           })
           .then(function(response) {
             let imageArray = [];
@@ -98,7 +100,8 @@ export default {
           // eslint-disable-next-line no-unused-vars
           .catch(function(error) {
             return self.$buefy.toast.open({
-              message: "Sorry, please try again or add more words",
+              message:
+                "Sorry, please try again or add more words or select private or public",
               type: "is-danger",
               position: "is-bottom",
               duration: 6000

@@ -2,6 +2,16 @@
 
 This is a Vue web app which has an image repository which you can hopefully search
 
+Here are some commands to run to get this up and running (all of these are performed from the root directory).
+
+```bash
+cd frontend && npm run serve # to get the frontend running, has hot reload enabled
+```
+
+```bash
+cd backend && FLASK_APP=main.py flask run # to get the backend running, has a lot of logging to help debugging
+```
+
 # Architecture diagram
 
 # Features
@@ -21,27 +31,17 @@ This is a Vue web app which has an image repository which you can hopefully sear
   >
 - [x] private or public (permissions)
   > I enabled permissions through authentication, so when you first sign up a folder is in the bucket. The user has the choice to either upload to the public repo which means the toggled 'Public' in their option. If they toggled 'Private' then that means that it will be in a folder that they have selected from the dropdown.
-- [] secure uploading and stored images
-  >
+- [x] secure uploading and stored images
+  > I use Amazon S3 to upload and store images since upon creation only the users have access to the resources available in Amazon S3. Also, default server-side encryption is enabled to add an additional layer of security.
 
 **DELETE function**
 
 - [] one / bulk / selected / all images
   >
-- [] Prevent a user deleting images from another user (access control)
-  >
-- [] secure deletion of images
-  >
-
-**SELL/BUY function**
-
-- [] ability to manage inventory
-  >
-- [] set price
-  >
-- [] discounts
-  >
-- [] handle money
+- [x] Prevent a user deleting images from another user (access control)
+  > Authentication of users handles this since each user is given an object directory to store their images or more folders and they only have access to this since their email is the unique identifier that has to match with the name of the object directory
+- [x] secure deletion of images
+  > I'm using Amazon S3 which is known for secure deletion
 
 # Things I learned
 
@@ -66,14 +66,13 @@ This is a Vue web app which has an image repository which you can hopefully sear
   - Data is available with a very small latency.
   - The database system receives less queries, allowing to serve the same dataset with a smaller number of nodes.
 - Used Redis to decrease time required to send a response from my backend my 6x! REDIS IS WOW :)
+- Users can now search in public and private repos
 
 # To do
 
-- searching in private, each time we add a photo to private we append it to the private images array in MongoDB, when user logs in they will have all their images in a redis cache might also want to use a redis cache for getting the list of buckets since a request is being sent each time we click on the dropdown
-- encryption
 - bulk image add
 - searching images with images
-- Jest
+- SSH tunnel
 - Dockerize
 - Look at twelve factor app, figure out production
 
@@ -89,10 +88,7 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 - DELETE
 
-  - maybe to show all the possible images that they could delete, have something running in the background that picks up all the images from there albums and displays them?
-
-- SELL/BUY
-  - Stripe API?
+  - maybe to show all the possible images that they could delete, have something running in the background that picks up all the images from there albums and displays them? use redis to cache all private images
 
 # Technologies used
 
@@ -114,7 +110,6 @@ This is a Vue web app which has an image repository which you can hopefully sear
 # Considerations
 
 - Verify that user is not bot and send verification email?
-- Hash bucket names; hash bucket names, everytime you successfully add a new bucket to user create the actual bucket which is hashed in awss3, keep the hash and the actual name in the array,
 
 # Some things I look to do in the future/ improvements that could be made
 
@@ -126,17 +121,17 @@ This is a Vue web app which has an image repository which you can hopefully sear
 
 # Twelve factor app
 
-| Factor              | Description                                                      | Did we do it       | How did we do it/not do it?                                                                               |
-| ------------------- | ---------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| Codebase            | One codebase tracked in revision control, deploys                | :heavy_check_mark: | My app uses Git as the version control system and this repo is the copy of the revision tracking database |
-| Dependencies        | Explicity declare and isolate dependencies                       |                    |                                                                                                           |
-| Config              | Store config in the environment                                  |                    |                                                                                                           |
-| Backing services    | Treat backing services as attached services                      |                    |                                                                                                           |
-| Build, release, run | Strictly separate build and run stages                           |                    |                                                                                                           |
-| Processes           | Execute the app as one or mroe stateless processes               |                    |                                                                                                           |
-| Port binding        | Export services via port binding                                 |                    |                                                                                                           |
-| Concurrency         | Scale out via the process model                                  |                    |                                                                                                           |
-| Disposability       | Maximize robustness with fast startup and graceful shutdown      |                    |                                                                                                           |
-| Dev/prod parity     | Keep development, staging, and production as similar as possible |                    |                                                                                                           |
+| Factor              | Description                                                      | Did we do it       | How did we do it/not do it?                                                                                                                                                                                                                                                                                                  |
+| ------------------- | ---------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Codebase            | One codebase tracked in revision control, deploys                | :heavy_check_mark: | My app uses Git as the version control system and this repo is the copy of the revision tracking database                                                                                                                                                                                                                    |
+| Dependencies        | Explicity declare and isolate dependencies                       | :heavy_check_mark: | I sort of did this because I do have explicity dependency declaration which is just the `npm install` and the commands for starting up the backend and frontend which are like the builds. I'm confused though if my frontend offers any dependency isolation, however I know my backend does because I'm using `virtualenv` |
+| Config              | Store config in the environment                                  | :heavy_check_mark: | Strict separation of config variables from code in `.env`                                                                                                                                                                                                                                                                    |
+| Backing services    | Treat backing services as attached services                      |                    |                                                                                                                                                                                                                                                                                                                              |
+| Build, release, run | Strictly separate build and run stages                           |                    |                                                                                                                                                                                                                                                                                                                              |
+| Processes           | Execute the app as one or mroe stateless processes               |                    |                                                                                                                                                                                                                                                                                                                              |
+| Port binding        | Export services via port binding                                 |                    | On development services are exposed via port binding for example backend is `localhost:5000` and frontend is `localhost:8080`                                                                                                                                                                                                |
+| Concurrency         | Scale out via the process model                                  |                    |                                                                                                                                                                                                                                                                                                                              |
+| Disposability       | Maximize robustness with fast startup and graceful shutdown      |                    |                                                                                                                                                                                                                                                                                                                              |
+| Dev/prod parity     | Keep development, staging, and production as similar as possible |                    |                                                                                                                                                                                                                                                                                                                              |
 | Logs                | Treat logs as event streams                                      |                    |
-| Admin processes     | Run admin/management tasks as one-off processes                  |                    |                                                                                                           |
+| Admin processes     | Run admin/management tasks as one-off processes                  |                    |                                                                                                                                                                                                                                                                                                                              |

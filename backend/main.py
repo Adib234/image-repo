@@ -113,19 +113,39 @@ def search():
         data = request.json
 
         query = data["query"]
-        es.indices.refresh(index="shopify-index")
+        permissions = data["permissions"]
 
-        res = es.search(index="shopify-index",
-                        body={"query": {"match": {"tags": query}}})
+        if permissions == "Public":
+            es.indices.refresh(index="shopify-index")
 
-        app.logger.info("Got %d Hits:" % res['hits']['total']['value'])
-        # for hit in res['hits']['hits']:
-        #     app.logger.info("%(timestamp)s %(author)s: %(text)s" %
-        #                     hit["_source"])
+            res = es.search(index="shopify-index",
+                            body={"query": {"match": {"tags": query}}})
 
-        res["hits"]["hits"] = res["hits"]["hits"][:5]
-        app.logger.info(len(res['hits']['hits']))
-        return add_success_headers(res["hits"]["hits"])
+            app.logger.info("Got %d Hits:" % res['hits']['total']['value'])
+
+            res["hits"]["hits"] = res["hits"]["hits"][:5]
+            app.logger.info(len(res['hits']['hits']))
+            return add_success_headers(res["hits"]["hits"])
+
+        elif permissions == "Private":
+            es.indices.refresh(index="shopify-index")
+
+            res = es.search(index="shopify-index",
+                            body={"query": {"match": {"tags": query}}})
+
+            app.logger.info("Got %d Hits:" % res['hits']['total']['value'])
+
+            # res["hits"]["hits"]
+            final = []
+
+            for hit in res['hits']['hits']:
+                if hit in users.find_one({"email": email})['bucket_name']:
+                    final.append(hit)
+            app.logger.info(len(final))
+            return add_success_headers(final)
+
+        else:
+            return {"data": "", "status": 404, "statusText": 'OK', "headers": {}, "config": {}}
 
     elif request.method == "OPTIONS":  # CORS preflight
         return _build_cors_prelight_response()

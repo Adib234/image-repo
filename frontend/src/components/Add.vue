@@ -49,7 +49,6 @@
               <div v-for="name in userBuckets" :key="name">
                 <a v-on:click="setBucket(name)" class="dropdown-item">{{name}}</a>
               </div>
-              <!-- <a href="#" class="dropdown-item">wahy</a> -->
             </div>
           </div>
         </div>
@@ -62,16 +61,7 @@
           placeholder="Album name"
         />
       </div>
-      <div class="control1">
-        <label class="radio">
-          <input type="radio" value="Single" v-model="quantity" />
-          Single
-        </label>
-        <label class="radio">
-          <input type="radio" value="Bulk" v-model="quantity" />
-          Bulk
-        </label>
-      </div>
+
       <div class="container has-text-centered">
         <div class="level">
           <input class="button is-light is-medium" type="file" id="fileUpload" />
@@ -121,7 +111,7 @@ export default {
       userBuckets: [],
       privateBucket: "", // the private bucket they select from the dropdown
       dropdownClicked: false,
-      quantity: "" // single or bulk
+      selectedFiles: undefined
     };
   },
 
@@ -180,97 +170,86 @@ export default {
 
       var files = document.getElementById("fileUpload").files;
 
-      if (this.quantity === "Single") {
-        // single upload
-        try {
-          if (files) {
-            let file = files[0];
-            let fileName = file?.name;
-            this.fileNameGlobal = fileName;
+      // single upload
+      try {
+        if (files) {
+          let file = files[0];
+          let fileName = file?.name;
+          this.fileNameGlobal = fileName;
 
-            if (self.permissions === "Public") {
-              let filePath = `${publicBucketName}/` + fileName;
+          if (self.permissions === "Public") {
+            let filePath = `${publicBucketName}/` + fileName;
 
-              let upload = s3.upload({
-                Bucket: publicBucketName,
-                Key: filePath,
-                Body: file
-              });
-              let promise = upload.promise();
+            let upload = s3.upload({
+              Bucket: publicBucketName,
+              Key: filePath,
+              Body: file
+            });
+            let promise = upload.promise();
 
-              promise.then(
-                // eslint-disable-next-line no-unused-vars
-                function(data) {
-                  self.uploaded = true;
+            promise.then(
+              // eslint-disable-next-line no-unused-vars
+              function(data) {
+                self.uploaded = true;
 
-                  self.showImage();
-                  return self.$buefy.toast.open({
-                    message: "Yay, your file has been uploaded!",
-                    type: "is-success",
-                    position: "is-bottom",
-                    duration: 6000
-                  });
-                },
-                // eslint-disable-next-line no-unused-vars
-                function(err) {
-                  return self.$buefy.toast.open({
-                    message:
-                      "Your file failed to be uploaded, please try again or later",
-                    type: "is-danger",
-                    position: "is-bottom",
-                    duration: 6000
-                  });
-                }
-              );
-            } else {
-              let filePath = `${self.email}/${self.privateBucket}/` + fileName;
+                self.showImage();
+                return self.$buefy.toast.open({
+                  message: "Yay, your file has been uploaded!",
+                  type: "is-success",
+                  position: "is-bottom",
+                  duration: 6000
+                });
+              },
+              // eslint-disable-next-line no-unused-vars
+              function(err) {
+                return self.$buefy.toast.open({
+                  message:
+                    "Your file failed to be uploaded, please try again or later",
+                  type: "is-danger",
+                  position: "is-bottom",
+                  duration: 6000
+                });
+              }
+            );
+          } else {
+            let filePath = `${self.email}/${self.privateBucket}/` + fileName;
 
-              let upload = s3.upload({
-                Bucket: publicBucketName,
-                Key: filePath,
-                Body: file
-              });
-              let promise = upload.promise();
+            let upload = s3.upload({
+              Bucket: publicBucketName,
+              Key: filePath,
+              Body: file
+            });
+            let promise = upload.promise();
 
-              promise.then(
-                // eslint-disable-next-line no-unused-vars
-                function(data) {
-                  self.uploaded = true;
+            promise.then(
+              // eslint-disable-next-line no-unused-vars
+              function(data) {
+                self.uploaded = true;
 
-                  self.showImage();
-                  return self.$buefy.toast.open({
-                    message: "Yay, your file has been uploaded!",
-                    type: "is-success",
-                    position: "is-bottom",
-                    duration: 6000
-                  });
-                },
-                // eslint-disable-next-line no-unused-vars
-                function(err) {
-                  return self.$buefy.toast.open({
-                    message:
-                      "Your file failed to be uploaded, please try again or later",
-                    type: "is-danger",
-                    position: "is-bottom",
-                    duration: 6000
-                  });
-                }
-              );
-            }
+                self.showImage();
+                return self.$buefy.toast.open({
+                  message: "Yay, your file has been uploaded!",
+                  type: "is-success",
+                  position: "is-bottom",
+                  duration: 6000
+                });
+              },
+              // eslint-disable-next-line no-unused-vars
+              function(err) {
+                return self.$buefy.toast.open({
+                  message:
+                    "Your file failed to be uploaded, please try again or later",
+                  type: "is-danger",
+                  position: "is-bottom",
+                  duration: 6000
+                });
+              }
+            );
           }
-        } catch (err) {
-          return self.$buefy.toast.open({
-            message: "Please upload something",
-            type: "is-danger",
-            position: "is-bottom",
-            duration: 3000
-          });
         }
-      } else if (this.quantity === "Bulk") {
-        return 0;
-      } else {
-        return this.$buefy.toast.open({
-          message: "Please upload something",
+      } catch (err) {
+        return self.$buefy.toast.open({
+          message: "Please upload something or try again later",
           type: "is-danger",
           position: "is-bottom",
           duration: 3000
@@ -376,10 +355,7 @@ export default {
 .control {
   margin-bottom: 1rem;
 }
-.control1 {
-  margin-bottom: 1rem;
-  margin-right: 1.2rem;
-}
+
 .logout {
   padding: 0 5rem 0 5rem;
 }

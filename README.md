@@ -28,7 +28,7 @@ cd backend && FLASK_APP=main.py flask run # to get the backend running, has a lo
 **ADD function**
 
 - [] one / bulk / enormous amount of images
-  >
+  > Adding only one image is currently supported
 - [x] private or public (permissions)
   > I enabled permissions through authentication, so when you first sign up a folder is in the bucket. The user has the choice to either upload to the public repo which means the toggled 'Public' in their option. If they toggled 'Private' then that means that it will be in a folder that they have selected from the dropdown.
 - [x] secure uploading and stored images
@@ -67,10 +67,11 @@ cd backend && FLASK_APP=main.py flask run # to get the backend running, has a lo
   - The database system receives less queries, allowing to serve the same dataset with a smaller number of nodes.
 - Used Redis to decrease time required to send a response from my backend my 6x! REDIS IS WOW :)
 - Users can now search in public and private repos
+- When you first try to connect to an EC2 instance, don't use `https` but `http`, when use `https` it tries to establish a HTTPS/SSL connection and not an unencrypted HTTP connection to your server.
+- This [tutorial](https://hackernoon.com/tutorial-creating-and-managing-a-node-js-server-on-aws-part-1-d67367ac5171) helps get started with an EC2 instance
 
 # To do
 
-- bulk image add
 - searching images with images
 - SSH tunnel
 - Dockerize
@@ -107,10 +108,6 @@ cd backend && FLASK_APP=main.py flask run # to get the backend running, has a lo
 - Bulma as CSS framework
 - AWS-SDK to connect to AWS-S3 for using their buckets to store images for public and private repositories
 
-# Considerations
-
-- Verify that user is not bot and send verification email?
-
 # Some things I look to do in the future/ improvements that could be made
 
 - I didn't quite understand how to modularize my routes with Flask which I should do in the future because having a lot of code in one file makes it hard to debug. The thing that prevented me was that Flask's factory application was confusing
@@ -118,6 +115,9 @@ cd backend && FLASK_APP=main.py flask run # to get the backend running, has a lo
 - Perform some validation when users enter a name for their private albums since the name of their private album is the bucket name
 - Because of bad planning, when the user creates a new account for some reason the home page and signup page have the same route
 - I tried refactoring with Flask but it didn't work, from now on I will keep routes skinny and middlewares fat instead of having code that connects to the database or does some processing on the request be in the same file as the routes.
+- Verify that user is not bot and send verification email?
+- Support for adding bulk images
+- Make access to MongoDB more secure
 
 # Twelve factor app
 

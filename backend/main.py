@@ -114,7 +114,7 @@ def search():
 
         query = data["query"]
         permissions = data["permissions"]
-
+        email = data["email"]
         if permissions == "Public":
             es.indices.refresh(index="shopify-index")
 

@@ -44,12 +44,14 @@
     >My goal is to help you securely upload images and be able to retrieve from a public repository and your own through text and other images 🙂</p>
     <Add v-bind:email="email" v-on:session="authenticated=false" v-if="authenticated" />
     <Search v-bind:email="email" v-if="authenticated" />
+    <Delete v-bind:email="email" v-if="authenticated" />
   </div>
 </template>
 
 <script>
 import Add from "./Add";
 import Search from "./Search";
+import Delete from "./Delete";
 import axios from "axios";
 
 export default {
@@ -60,7 +62,8 @@ export default {
 
   components: {
     Add,
-    Search
+    Search,
+    Delete
   },
   methods: {
     authenticate: function() {

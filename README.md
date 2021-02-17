@@ -76,10 +76,10 @@ elasticsearch # to start the elsaticsearch instance for searching
 - Deploying the [frontend](https://jgefroh.medium.com/a-guide-to-using-nginx-for-static-websites-d96a9d034940) need to register a domain name, most of them cost money :(, my frontend is on EC2 instance but I just couldn't get the backend there. For some reason too many missing modules in my requirements.txt.
 - Find out ways to register domain name, maybe use [Amazon](https://aws.amazon.com/getting-started/hands-on/get-a-domain/) in the future?
 - Other links that I found helpful were this [fullstack deplyoment tutorial](https://www.freecodecamp.org/news/lessons-learned-from-deploying-my-first-full-stack-web-application-34f94ec0a286/), using [pm2](https://medium.com/hackernoon/tutorial-creating-and-managing-a-node-js-server-on-aws-part-2-5fbdea95f8a1#.mnlkymeti), [nginx and flask](https://medium.com/ymedialabs-innovation/deploy-flask-app-with-nginx-using-gunicorn-and-supervisor-d7a93aa07c18), [reducing build size in production](https://medium.com/js-dojo/how-to-reduce-your-vue-js-bundle-size-with-webpack-3145bf5019b7)
+- use `flex-wrap: wrap` to make content dynamically be on the next line or row
 
 # To do
 
-- Delete
 - Look at twelve factor app
 
 - DELETE

@@ -18,6 +18,8 @@ elasticsearch # to start the elsaticsearch instance for searching
 
 # Architecture diagram
 
+![](res/2021-02-17-17-47-36.png)
+
 # Features
 
 **SEARCH function**
@@ -40,8 +42,8 @@ elasticsearch # to start the elsaticsearch instance for searching
 
 **DELETE function**
 
-- [] one / bulk / selected / all images
-  >
+- [x] one / bulk / selected / all images
+  > One/bulk/selected/all images is supported using `s3.deleteObject`!
 - [x] Prevent a user deleting images from another user (access control)
   > Authentication of users handles this since each user is given an object directory to store their images or more folders and they only have access to this since their email is the unique identifier that has to match with the name of the object directory
 - [x] secure deletion of images
@@ -80,11 +82,9 @@ elasticsearch # to start the elsaticsearch instance for searching
 
 # To do
 
-- Look at twelve factor app
-
-- DELETE
-
-  - maybe to show all the possible images that they could delete, have something running in the background that picks up all the images from there albums and displays them? use redis to cache all private images
+- lighthouse labs
+- show a demo of your app
+- ask for feedback on vuejs, flask, and a bunch of other places! create a section of it
 
 # Technologies used
 
@@ -121,12 +121,12 @@ elasticsearch # to start the elsaticsearch instance for searching
 | Codebase            | One codebase tracked in revision control, deploys                | :heavy_check_mark: | My app uses Git as the version control system and this repo is the copy of the revision tracking database                                                                                                                                                                                                                    |
 | Dependencies        | Explicity declare and isolate dependencies                       | :heavy_check_mark: | I sort of did this because I do have explicity dependency declaration which is just the `npm install` and the commands for starting up the backend and frontend which are like the builds. I'm confused though if my frontend offers any dependency isolation, however I know my backend does because I'm using `virtualenv` |
 | Config              | Store config in the environment                                  | :heavy_check_mark: | Strict separation of config variables from code in `.env`                                                                                                                                                                                                                                                                    |
-| Backing services    | Treat backing services as attached services                      |                    |                                                                                                                                                                                                                                                                                                                              |
-| Build, release, run | Strictly separate build and run stages                           |                    |                                                                                                                                                                                                                                                                                                                              |
-| Processes           | Execute the app as one or mroe stateless processes               |                    |                                                                                                                                                                                                                                                                                                                              |
-| Port binding        | Export services via port binding                                 |                    | On development services are exposed via port binding for example backend is `localhost:5000` and frontend is `localhost:8080`                                                                                                                                                                                                |
-| Concurrency         | Scale out via the process model                                  |                    |                                                                                                                                                                                                                                                                                                                              |
-| Disposability       | Maximize robustness with fast startup and graceful shutdown      |                    |                                                                                                                                                                                                                                                                                                                              |
-| Dev/prod parity     | Keep development, staging, and production as similar as possible |                    |                                                                                                                                                                                                                                                                                                                              |
-| Logs                | Treat logs as event streams                                      |                    |
-| Admin processes     | Run admin/management tasks as one-off processes                  |                    |                                                                                                                                                                                                                                                                                                                              |
+| Backing services    | Treat backing services as attached services                      |                    | We have backing services but I don't think we have backups of any of the backing services                                                                                                                                                                                                                                    |
+| Build, release, run | Strictly separate build and run stages                           |                    | Haven't even looked into releasing yet, so this is not done : (                                                                                                                                                                                                                                                              |
+| Processes           | Execute the app as one or more stateless processes               | :heavy_check_mark: | No sticky sessions, anything that needs to persist is on a backing service that's either third-party (i.e. AWS) or a database (MongoDB)                                                                                                                                                                                      |
+| Port binding        | Export services via port binding                                 | :heavy_check_mark: | On development services are exposed via port binding for example backend is `localhost:5000` and frontend is `localhost:8080`                                                                                                                                                                                                |
+| Concurrency         | Scale out via the process model                                  |                    | Didn't understand this, I will look into this the next time I develop something similar. I have no tasks running in the background but I think if I had them, it would be better since the wait time to fetch for example images would be less.                                                                              |
+| Disposability       | Maximize robustness with fast startup and graceful shutdown      |                    | Fast startup because not many things need to be run but no graceful shutdown other than killing each individual process that is required to keep the app up                                                                                                                                                                  |
+| Dev/prod parity     | Keep development, staging, and production as similar as possible | :heavy_check_mark: | pretty much identical, you can check the production branch, the only difference is that i deleted all comments to minify javascript                                                                                                                                                                                          |
+| Logs                | Treat logs as event streams                                      |                    | I didn't do this since I didn't deploy my project but in the future if I do then I will look into using Splunk for analyzing logs to find specific event in the past, gain insights of my backend such as requests per minute and monitoring                                                                                 |
+| Admin processes     | Run admin/management tasks as one-off processes                  |                    | I have no admin environment                                                                                                                                                                                                                                                                                                  |

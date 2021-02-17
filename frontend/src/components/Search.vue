@@ -142,4 +142,11 @@ export default {
   height: 15rem;
   width: 15rem;
 }
+.search-image {
+  width: 35%;
+  margin: auto;
+}
+.checkbox {
+  margin-left: 0.5rem;
+}
 </style>

@@ -160,10 +160,10 @@ a {
 }
 .login {
   min-width: 15rem;
-  margin-right: 24rem;
   padding: 2rem;
-  margin-left: 24rem;
   padding-bottom: 0.5rem;
+  margin: auto;
+  width: 45%;
 }
 .login-button {
   margin-bottom: 0.5rem;

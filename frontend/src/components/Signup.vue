@@ -48,20 +48,20 @@
 
 <script>
 import axios from "axios";
-import AWS from "aws-sdk";
+import S3 from "aws-sdk/clients/s3";
+import CognitoIdentityCredentials from "aws-sdk/lib/credentials";
 
 let publicBucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
 let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
-AWS.config.update({
+
+var s3 = new S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: publicBucketName },
   region: bucketRegion,
-  credentials: new AWS.CognitoIdentityCredentials({
+  credentials: new CognitoIdentityCredentials({
     IdentityPoolId: IdentityPoolId
   })
-});
-var s3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  params: { Bucket: publicBucketName }
 });
 export default {
   name: "Signup",
@@ -116,9 +116,6 @@ export default {
                 Bucket: publicBucketName,
                 Key: `${self.email}/`
               };
-              // when user creates a new account a folder in the bucket is create for them,
-              // so they can put there private images if they want to in the future
-              // *this works
               s3.putObject(params, function(err, data) {
                 if (err) {
                   console.log("Error creating the folder: ", err);

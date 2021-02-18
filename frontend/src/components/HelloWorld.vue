@@ -102,7 +102,6 @@ export default {
           )
         ) {
           let self = this;
-          // login works
           axios
             .post(`http://127.0.0.1:5000/login`, {
               email: this.email,
@@ -141,8 +140,6 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;

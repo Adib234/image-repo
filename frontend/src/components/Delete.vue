@@ -11,7 +11,6 @@
         <button class="button is-light is-medium" v-on:click="deleteNow" v-show="deleted">Delete</button>
         <button class="button escape is-light is-medium" v-on:click="escape" v-show="deleted">Escape</button>
       </div>
-
       <div class="level second">
         <div class="img-container level-item" v-for="object in myObjects" v-bind:key="object.key">
           <img class="img" :src="object.image" />
@@ -27,21 +26,20 @@
 
 
 <script>
-import AWS from "aws-sdk";
+import S3 from "aws-sdk/clients/s3";
+import CognitoIdentityCredentials from "aws-sdk/lib/credentials";
 
 let publicBucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
 let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
 
-AWS.config.update({
+var s3 = new S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: publicBucketName },
   region: bucketRegion,
-  credentials: new AWS.CognitoIdentityCredentials({
+  credentials: new CognitoIdentityCredentials({
     IdentityPoolId: IdentityPoolId
   })
-});
-var s3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  params: { Bucket: publicBucketName }
 });
 export default {
   name: "Delete",
@@ -58,7 +56,6 @@ export default {
       promise.then(
         function(data) {
           let final = [];
-          // should do this with regex in the future, this is just a quick hack
           for (let object of data.Contents) {
             if (
               object.Key.endsWith(".jpg") ||

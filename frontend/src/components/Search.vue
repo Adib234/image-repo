@@ -30,20 +30,19 @@
 
 <script>
 import axios from "axios";
-import AWS from "aws-sdk";
+import S3 from "aws-sdk/clients/s3";
+import CognitoIdentityCredentials from "aws-sdk/lib/credentials";
 let bucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
 let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
 
-AWS.config.update({
+var s3 = new S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: bucketName },
   region: bucketRegion,
-  credentials: new AWS.CognitoIdentityCredentials({
+  credentials: new CognitoIdentityCredentials({
     IdentityPoolId: IdentityPoolId
   })
-});
-var s3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  params: { Bucket: bucketName }
 });
 export default {
   name: "Search",
@@ -55,7 +54,6 @@ export default {
   methods: {
     searchRequest: function() {
       let self = this;
-
       if (this.query.length > 0) {
         axios
           .post(`http://127.0.0.1:5000/search`, {
@@ -71,16 +69,13 @@ export default {
             for (let key of response.data) {
               imageArray.push(key["_source"]["file_name"]);
             }
-
             for (let imageFile of imageArray) {
               var params = {
                 Bucket: bucketName,
                 Key: `${bucketName}/` + imageFile
               };
               let getImage = s3.getObject(params);
-
               let promise = getImage.promise();
-
               promise.then(
                 function(data) {
                   let imageData = data.Body;

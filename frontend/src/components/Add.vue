@@ -10,7 +10,6 @@
           type="text"
           placeholder="Enter some description of the image if you'd like, otherwise we will classify the image on our own!"
         />
-
         <button v-on:click="s3upload" class="button is-light is-medium">Add</button>
       </div>
       <div class="control">
@@ -23,13 +22,11 @@
           Private
         </label>
       </div>
-
       <div v-if="permissions=='Private'" class="private">
         <p v-if="dropdownClicked">
           The album you chose and will upload to is
           <strong>{{privateBucket}}</strong>
         </p>
-
         <div v-bind:class="dropdown">
           <div class="dropdown-trigger">
             <button
@@ -61,14 +58,12 @@
           placeholder="Album name"
         />
       </div>
-
       <div class="container has-text-centered">
         <div class="level">
           <input class="button is-light is-medium" type="file" id="fileUpload" />
         </div>
       </div>
     </section>
-
     <div class="container">
       <p v-if="uploaded" class="is-size-3">The image you just uploaded</p>
       <img class="img" v-if="uploaded" :src="imageUrl" />
@@ -77,22 +72,20 @@
 </template>
 
 <script>
-import AWS from "aws-sdk";
 import axios from "axios";
+import AWS from "aws-sdk";
 
 let publicBucketName = process.env.VUE_APP_BUCKET_NAME;
 let bucketRegion = process.env.VUE_APP_BUCKET_REGION;
 let IdentityPoolId = process.env.VUE_APP_IDENTITY_POOL_ID;
 
-AWS.config.update({
+var s3 = new AWS.S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: publicBucketName },
   region: bucketRegion,
   credentials: new AWS.CognitoIdentityCredentials({
     IdentityPoolId: IdentityPoolId
   })
-});
-var s3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  params: { Bucket: publicBucketName }
 });
 export default {
   name: "Add",
@@ -104,12 +97,12 @@ export default {
       fileNameGlobal: "",
       imageUrl: "",
       imageDescription: "",
-      permissions: "", // public or private
+      permissions: "",
       dropdown: "dropdown",
       adding: false,
-      bucketUserName: "", //name of the bucket that the image will be added to, nothing if it's public
+      bucketUserName: "",
       userBuckets: [],
-      privateBucket: "", // the private bucket they select from the dropdown
+      privateBucket: "",
       dropdownClicked: false,
       selectedFiles: undefined
     };
@@ -128,10 +121,8 @@ export default {
               Key: `${this.email}/${this.privateBucket}/` + this.fileNameGlobal
             };
       let getImage = s3.getObject(params);
-
       let promise = getImage.promise();
       let self = this;
-
       promise.then(
         function(data) {
           let imageData = data.Body;
@@ -141,17 +132,12 @@ export default {
           let base64encode = btoa(str).replace(/.{76}(?=.)/g, "$&\n");
           let srcUrl = `data:image/jpeg;base64, ${base64encode}`;
           self.imageUrl = srcUrl;
-
-          // tags == 0 test passes
-          // tags > 1 works
           axios
             .post(`http://127.0.0.1:5000/tags`, {
               fileName: self.fileNameGlobal,
               image: base64encode,
               tags: self.imageDescription,
-              private: self.permissions === "Private" ? true : false, // if its private, this gets added to the user info in our database
-              // so that when they want to search from their private repos they can do so
-              email: self.email
+              private: self.permissions === "Private" ? true : false
             })
             .then(function(response) {
               console.log(response);
@@ -167,10 +153,7 @@ export default {
     },
     s3upload: function() {
       let self = this;
-
       var files = document.getElementById("fileUpload").files;
-
-      // single upload
       try {
         if (files) {
           let file = files[0];
@@ -186,7 +169,6 @@ export default {
               Body: file
             });
             let promise = upload.promise();
-
             promise.then(
               // eslint-disable-next-line no-unused-vars
               function(data) {
@@ -213,19 +195,16 @@ export default {
             );
           } else {
             let filePath = `${self.email}/${self.privateBucket}/` + fileName;
-
             let upload = s3.upload({
               Bucket: publicBucketName,
               Key: filePath,
               Body: file
             });
             let promise = upload.promise();
-
             promise.then(
               // eslint-disable-next-line no-unused-vars
               function(data) {
                 self.uploaded = true;
-
                 self.showImage();
                 return self.$buefy.toast.open({
                   message: "Yay, your file has been uploaded!",
@@ -257,7 +236,6 @@ export default {
       }
     },
     makeActive: function() {
-      //request works
       if (this.dropdown == "dropdown") {
         this.dropdown = "dropdown is-active";
         let self = this;
@@ -279,7 +257,6 @@ export default {
     addBucket: function() {
       this.adding = true;
       let self = this;
-
       if (this.bucketUserName.length == 0) {
         return this.$buefy.toast.open({
           message: "Please enter something for your album name",
@@ -288,7 +265,6 @@ export default {
           duration: 3000
         });
       } else {
-        // request works
         axios
           .post(`http://127.0.0.1:5000/add_bucket_name`, {
             email: this.email,
@@ -300,9 +276,6 @@ export default {
               Bucket: publicBucketName,
               Key: `${self.email}/${self.bucketUserName}/`
             };
-            // when user creates a new account a folder in the bucket is create for them,
-            // so they can put there private images if they want to in the future
-            // *this works
             s3.putObject(params, function(err, data) {
               if (err) {
                 console.log("Error creating the folder: ", err);
@@ -317,8 +290,8 @@ export default {
               duration: 3000
             });
           })
+          // eslint-disable-next-line no-unused-vars
           .catch(function(error) {
-            console.log(error);
             return self.$buefy.toast.open({
               message: "Please do not enter the same bucket name",
               type: "is-danger",
